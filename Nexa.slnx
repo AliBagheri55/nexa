@@ -1,0 +1,9 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="Nexa/Nexa.csproj" Id="d3477cb7-758a-4a8e-b7bc-42edafc8dcdf">
+    <Platform Solution="*|x64" Project="x64" />
+  </Project>
+</Solution>

@@ -1,0 +1,34 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build
+[Bb]in/
+[Oo]bj/
+
+# Debug
+Debug/
+Release/
+x64/
+x86/
+
+# NuGet
+packages/
+*.nupkg
+
+# Logs
+*.log
+
+# Database files
+*.mdf
+*.ldf
+
+# Temporary files
+*.tmp
+*.temp
+
+# Publish
+publish/

@@ -1,0 +1,661 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Nexa Video Call</title>
+
+    <style>
+        body {
+            margin: 0;
+            background: #111;
+            color: white;
+            font-family: Arial;
+            overflow: hidden;
+        }
+
+        #videos {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #remoteVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: #000;
+        }
+
+        #localVideo {
+            position: absolute;
+            right: 20px;
+            bottom: 80px;
+            width: 220px;
+            height: 160px;
+            object-fit: cover;
+            background: #222;
+            border-radius: 15px;
+            border: 2px solid white;
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        button {
+            padding: 12px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        #status {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,.6);
+            padding: 10px 20px;
+            border-radius: 10px;
+            z-index: 10;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="videos">
+
+        <div id="status">
+            در حال اتصال...
+        </div>
+
+        <video id="remoteVideo"
+               autoplay
+               playsinline>
+        </video>
+
+        <video id="localVideo"
+               autoplay
+               muted
+               playsinline>
+        </video>
+
+        <div id="controls">
+
+            <button onclick="toggleMicrophone()">
+                🎤 میکروفون
+            </button>
+
+            <button onclick="toggleCamera()">
+                🎥 دوربین
+            </button>
+
+            <button onclick="endCall()">
+                ☎ پایان تماس
+            </button>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        let localStream = null;
+        let peerConnection = null;
+
+        let pendingIceCandidates = [];
+        let remoteDescriptionSet = false;
+
+        let callEnded = false;
+
+        const localVideo =
+            document.getElementById("localVideo");
+
+        const remoteVideo =
+            document.getElementById("remoteVideo");
+
+        const status =
+            document.getElementById("status");
+
+        const configuration = {
+
+            iceServers: [
+
+                {
+                    urls: "stun:stun.l.google.com:19302"
+                }
+
+            ]
+
+        };
+
+        async function startCamera() {
+
+            try {
+
+                if (localStream)
+                    return;
+
+                localStream =
+                    await navigator.mediaDevices.getUserMedia({
+
+                        video: true,
+                        audio: true
+
+                    });
+
+                localVideo.srcObject =
+                    localStream;
+
+                status.innerText =
+                    "دوربین و میکروفون فعال شد";
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Camera Error:",
+                    error
+                );
+
+                status.innerText =
+                    "خطا در دسترسی به دوربین و میکروفون";
+
+            }
+
+        }
+
+        function createPeerConnection() {
+
+            if (peerConnection)
+                return;
+
+            peerConnection =
+                new RTCPeerConnection(configuration);
+
+            remoteDescriptionSet = false;
+            pendingIceCandidates = [];
+
+            if (localStream) {
+
+                localStream
+                    .getTracks()
+                    .forEach(track => {
+
+                        peerConnection.addTrack(
+                            track,
+                            localStream
+                        );
+
+                    });
+
+            }
+
+            peerConnection.ontrack =
+                function (event) {
+
+                    console.log(
+                        "Remote stream received"
+                    );
+
+                    if (event.streams &&
+                        event.streams.length > 0) {
+
+                        remoteVideo.srcObject =
+                            event.streams[0];
+
+                        status.innerText =
+                            "تماس برقرار شد";
+
+                    }
+
+                };
+
+            peerConnection.onicecandidate =
+                function (event) {
+
+                    if (event.candidate) {
+
+                        window.chrome.webview.postMessage({
+
+                            type: "iceCandidate",
+
+                            candidate:
+                                JSON.stringify(
+                                    event.candidate
+                                )
+
+                        });
+
+                    }
+
+                };
+
+            peerConnection.oniceconnectionstatechange =
+                function () {
+
+                    console.log(
+                        "ICE state:",
+                        peerConnection.iceConnectionState
+                    );
+
+                    if (
+                        peerConnection.iceConnectionState ===
+                        "checking"
+                    ) {
+
+                        status.innerText =
+                            "در حال بررسی اتصال...";
+
+                    }
+
+                    if (
+                        peerConnection.iceConnectionState ===
+                        "connected"
+                    ) {
+
+                        status.innerText =
+                            "اتصال برقرار شد";
+
+                    }
+
+                    if (
+                        peerConnection.iceConnectionState ===
+                        "completed"
+                    ) {
+
+                        status.innerText =
+                            "تماس برقرار شد";
+
+                    }
+
+                    if (
+                        peerConnection.iceConnectionState ===
+                        "failed"
+                    ) {
+
+                        status.innerText =
+                            "اتصال WebRTC ناموفق بود";
+
+                    }
+
+                    if (
+                        peerConnection.iceConnectionState ===
+                        "disconnected"
+                    ) {
+
+                        status.innerText =
+                            "ارتباط قطع شد";
+
+                    }
+
+                };
+
+            peerConnection.onconnectionstatechange =
+                function () {
+
+                    console.log(
+                        "Connection state:",
+                        peerConnection.connectionState
+                    );
+
+                    if (
+                        peerConnection.connectionState ===
+                        "connected"
+                    ) {
+
+                        status.innerText =
+                            "تماس برقرار شد";
+
+                    }
+
+                    if (
+                        peerConnection.connectionState ===
+                        "connecting"
+                    ) {
+
+                        status.innerText =
+                            "در حال برقراری تماس...";
+
+                    }
+
+                    if (
+                        peerConnection.connectionState ===
+                        "disconnected"
+                    ) {
+
+                        status.innerText =
+                            "ارتباط قطع شد";
+
+                    }
+
+                    if (
+                        peerConnection.connectionState ===
+                        "failed"
+                    ) {
+
+                        status.innerText =
+                            "اتصال تماس ناموفق بود";
+
+                    }
+
+                };
+
+        }
+
+        async function createOffer() {
+
+            try {
+
+                if (callEnded)
+                    return;
+
+                await startCamera();
+
+                createPeerConnection();
+
+                const offer =
+                    await peerConnection.createOffer();
+
+                await peerConnection.setLocalDescription(
+                    offer
+                );
+
+                window.chrome.webview.postMessage({
+
+                    type: "offer",
+
+                    offer:
+                        JSON.stringify(offer)
+
+                });
+
+                status.innerText =
+                    "در حال تماس...";
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Offer Error:",
+                    error
+                );
+
+                status.innerText =
+                    "خطا در ایجاد تماس";
+
+            }
+
+        }
+
+        async function receiveOffer(offerJson) {
+
+            try {
+
+                if (callEnded)
+                    return;
+
+                await startCamera();
+
+                createPeerConnection();
+
+                const offer =
+                    JSON.parse(offerJson);
+
+                await peerConnection.setRemoteDescription(
+                    new RTCSessionDescription(offer)
+                );
+
+                remoteDescriptionSet = true;
+
+                for (
+                    const candidate
+                    of pendingIceCandidates
+                ) {
+
+                    try {
+
+                        await peerConnection.addIceCandidate(
+                            new RTCIceCandidate(candidate)
+                        );
+
+                    }
+                    catch (error) {
+
+                        console.error(
+                            "Queued ICE Error:",
+                            error
+                        );
+
+                    }
+
+                }
+
+                pendingIceCandidates = [];
+
+                const answer =
+                    await peerConnection.createAnswer();
+
+                await peerConnection.setLocalDescription(
+                    answer
+                );
+
+                window.chrome.webview.postMessage({
+
+                    type: "answer",
+
+                    answer:
+                        JSON.stringify(answer)
+
+                });
+
+                status.innerText =
+                    "در حال برقراری تماس...";
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Offer Receive Error:",
+                    error
+                );
+
+                status.innerText =
+                    "خطا در دریافت تماس";
+
+            }
+
+        }
+
+        async function receiveAnswer(answerJson) {
+
+            try {
+
+                if (!peerConnection)
+                    return;
+
+                const answer =
+                    JSON.parse(answerJson);
+
+                await peerConnection.setRemoteDescription(
+                    new RTCSessionDescription(answer)
+                );
+
+                remoteDescriptionSet = true;
+
+                for (
+                    const candidate
+                    of pendingIceCandidates
+                ) {
+
+                    try {
+
+                        await peerConnection.addIceCandidate(
+                            new RTCIceCandidate(candidate)
+                        );
+
+                    }
+                    catch (error) {
+
+                        console.error(
+                            "Queued ICE Error:",
+                            error
+                        );
+
+                    }
+
+                }
+
+                pendingIceCandidates = [];
+
+                status.innerText =
+                    "در حال برقراری تماس...";
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Answer Error:",
+                    error
+                );
+
+                status.innerText =
+                    "خطا در دریافت پاسخ";
+
+            }
+
+        }
+
+        async function receiveIceCandidate(
+            candidateJson
+        ) {
+
+            try {
+
+                const candidate =
+                    JSON.parse(candidateJson);
+
+                if (!peerConnection) {
+
+                    pendingIceCandidates.push(
+                        candidate
+                    );
+
+                    return;
+
+                }
+
+                if (!remoteDescriptionSet) {
+
+                    pendingIceCandidates.push(
+                        candidate
+                    );
+
+                    return;
+
+                }
+
+                await peerConnection.addIceCandidate(
+                    new RTCIceCandidate(candidate)
+                );
+
+            }
+            catch (error) {
+
+                console.error(
+                    "ICE Candidate Error:",
+                    error
+                );
+
+            }
+
+        }
+
+        function toggleMicrophone() {
+
+            if (!localStream)
+                return;
+
+            const audioTracks =
+                localStream.getAudioTracks();
+
+            audioTracks.forEach(track => {
+
+                track.enabled =
+                    !track.enabled;
+
+            });
+
+        }
+
+        function toggleCamera() {
+
+            if (!localStream)
+                return;
+
+            const videoTracks =
+                localStream.getVideoTracks();
+
+            videoTracks.forEach(track => {
+
+                track.enabled =
+                    !track.enabled;
+
+            });
+
+        }
+
+        function endCall() {
+
+            if (callEnded)
+                return;
+
+            callEnded = true;
+
+            if (localStream) {
+
+                localStream
+                    .getTracks()
+                    .forEach(track => {
+
+                        track.stop();
+
+                    });
+
+                localStream = null;
+
+            }
+
+            if (peerConnection) {
+
+                peerConnection.close();
+
+                peerConnection = null;
+
+            }
+
+            pendingIceCandidates = [];
+
+            remoteDescriptionSet = false;
+
+            remoteVideo.srcObject = null;
+            localVideo.srcObject = null;
+
+            window.chrome.webview.postMessage({
+
+                type: "endCall"
+
+            });
+
+        }
+
+    </script>
+
+</body>
+</html>
