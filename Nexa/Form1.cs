@@ -49,8 +49,6 @@ namespace Nexa
             path.CloseFigure();
 
             btnLogin.Region = new Region(path);
-            lblUserNames.Visible = false;
-            lblPasswords.Visible = false;
         }
 
         private void btnLogin_Click(object sender, EventArgs e)
@@ -131,13 +129,10 @@ namespace Nexa
 
         private void txtUserName_MouseEnter(object sender, EventArgs e)
         {
-            lblUserNames.Visible = true;
         }
 
         private void txtUserName_MouseLeave(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtUserName.Text))
-                lblUserNames.Visible = false;
         }
     }
 }

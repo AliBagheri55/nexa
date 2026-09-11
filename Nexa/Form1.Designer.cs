@@ -43,8 +43,6 @@
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.btnLogin = new System.Windows.Forms.Button();
-            this.lblUserNames = new System.Windows.Forms.Label();
-            this.lblPasswords = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -191,32 +189,12 @@
             this.btnLogin.UseVisualStyleBackColor = true;
             this.btnLogin.Click += new System.EventHandler(this.btnLogin_Click);
             // 
-            // lblUserNames
-            // 
-            this.lblUserNames.AutoSize = true;
-            this.lblUserNames.Location = new System.Drawing.Point(156, 157);
-            this.lblUserNames.Name = "lblUserNames";
-            this.lblUserNames.Size = new System.Drawing.Size(44, 16);
-            this.lblUserNames.TabIndex = 14;
-            this.lblUserNames.Text = "label4";
-            // 
-            // lblPasswords
-            // 
-            this.lblPasswords.AutoSize = true;
-            this.lblPasswords.Location = new System.Drawing.Point(156, 210);
-            this.lblPasswords.Name = "lblPasswords";
-            this.lblPasswords.Size = new System.Drawing.Size(44, 16);
-            this.lblPasswords.TabIndex = 15;
-            this.lblPasswords.Text = "label5";
-            // 
             // frmLogin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.ClientSize = new System.Drawing.Size(348, 370);
-            this.Controls.Add(this.lblPasswords);
-            this.Controls.Add(this.lblUserNames);
             this.Controls.Add(this.btnSeed);
             this.Controls.Add(this.pictureBox3);
             this.Controls.Add(this.pictureBox2);
@@ -260,8 +238,6 @@
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.PictureBox pictureBox3;
         private System.Windows.Forms.Button btnSeed;
-        private System.Windows.Forms.Label lblUserNames;
-        private System.Windows.Forms.Label lblPasswords;
     }
 }
 

@@ -169,7 +169,7 @@
             this.groupBox2.Controls.Add(this.btnAddStory);
             this.groupBox2.Location = new System.Drawing.Point(12, 33);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(1210, 121);
+            this.groupBox2.Size = new System.Drawing.Size(1269, 121);
             this.groupBox2.TabIndex = 0;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Story";
@@ -179,7 +179,7 @@
             // 
             this.flowStories.Location = new System.Drawing.Point(60, 13);
             this.flowStories.Name = "flowStories";
-            this.flowStories.Size = new System.Drawing.Size(1141, 102);
+            this.flowStories.Size = new System.Drawing.Size(1203, 102);
             this.flowStories.TabIndex = 2;
             // 
             // btnAddStory
@@ -220,7 +220,7 @@
             this.groupBox3.Controls.Add(this.listAnswer);
             this.groupBox3.Location = new System.Drawing.Point(436, 161);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(777, 620);
+            this.groupBox3.Size = new System.Drawing.Size(845, 620);
             this.groupBox3.TabIndex = 1;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Messages";
@@ -279,7 +279,7 @@
             // pictureBox2
             // 
             this.pictureBox2.Image = global::Nexa.Properties.Resources.Nexa;
-            this.pictureBox2.Location = new System.Drawing.Point(507, 205);
+            this.pictureBox2.Location = new System.Drawing.Point(549, 205);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(193, 163);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -289,7 +289,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(546, 371);
+            this.label5.Location = new System.Drawing.Point(588, 371);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(113, 16);
             this.label5.TabIndex = 14;
@@ -428,7 +428,7 @@
             this.listAnswer.ItemHeight = 35;
             this.listAnswer.Location = new System.Drawing.Point(407, 41);
             this.listAnswer.Name = "listAnswer";
-            this.listAnswer.Size = new System.Drawing.Size(357, 564);
+            this.listAnswer.Size = new System.Drawing.Size(432, 564);
             this.listAnswer.TabIndex = 1;
             this.listAnswer.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listAnswer_DrawItem);
             this.listAnswer.SelectedIndexChanged += new System.EventHandler(this.listAnswer_SelectedIndexChanged);
@@ -441,7 +441,7 @@
             this.toolStripMenuItem1});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1234, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(1293, 28);
             this.menuStrip1.TabIndex = 2;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -458,28 +458,29 @@
             // myInformationToolStripMenuItem
             // 
             this.myInformationToolStripMenuItem.Name = "myInformationToolStripMenuItem";
-            this.myInformationToolStripMenuItem.Size = new System.Drawing.Size(200, 26);
+            this.myInformationToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.myInformationToolStripMenuItem.Text = "My Information";
             this.myInformationToolStripMenuItem.Click += new System.EventHandler(this.myInformationToolStripMenuItem_Click);
             // 
             // banUserToolStripMenuItem
             // 
             this.banUserToolStripMenuItem.Name = "banUserToolStripMenuItem";
-            this.banUserToolStripMenuItem.Size = new System.Drawing.Size(200, 26);
+            this.banUserToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.banUserToolStripMenuItem.Text = "Ban user";
             this.banUserToolStripMenuItem.Click += new System.EventHandler(this.banUserToolStripMenuItem_Click);
             // 
             // savedMessagesToolStripMenuItem
             // 
             this.savedMessagesToolStripMenuItem.Name = "savedMessagesToolStripMenuItem";
-            this.savedMessagesToolStripMenuItem.Size = new System.Drawing.Size(200, 26);
+            this.savedMessagesToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.savedMessagesToolStripMenuItem.Text = "Saved Messages";
+            this.savedMessagesToolStripMenuItem.Click += new System.EventHandler(this.savedMessagesToolStripMenuItem_Click);
             // 
             // Nexa
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1234, 796);
+            this.ClientSize = new System.Drawing.Size(1293, 796);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBox2);

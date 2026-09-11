@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Nexa
 {
@@ -28,22 +24,26 @@ namespace Nexa
 
         public byte[] VideoData { get; set; }
 
+        public byte[] GifData { get; set; }
+
         public double? Latitude { get; set; }
 
         public double? Longitude { get; set; }
-        public byte[] GifData { get; set; }
+
         public string Reaction { get; set; }
 
         public int ReactionCount { get; set; }
 
         public override string ToString()
         {
-            if (!string.IsNullOrEmpty(Reaction))
+            string result = Text ?? "";
+
+            if (!string.IsNullOrWhiteSpace(Reaction))
             {
-                return Text + "   " + Reaction;
+                result += "   " + Reaction;
             }
 
-            return Text;
+            return result;
         }
     }
 }

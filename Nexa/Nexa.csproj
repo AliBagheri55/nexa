@@ -361,6 +361,13 @@
     <Compile Include="Resources\IncomingCall.Designer.cs">
       <DependentUpon>IncomingCall.cs</DependentUpon>
     </Compile>
+    <Compile Include="SavedMessage.cs" />
+    <Compile Include="SavedMessagesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SavedMessagesForm.Designer.cs">
+      <DependentUpon>SavedMessagesForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="StoryViewer.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -409,6 +416,9 @@
     </Compile>
     <EmbeddedResource Include="Resources\IncomingCall.resx">
       <DependentUpon>IncomingCall.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SavedMessagesForm.resx">
+      <DependentUpon>SavedMessagesForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="StoryViewer.resx">
       <DependentUpon>StoryViewer.cs</DependentUpon>
