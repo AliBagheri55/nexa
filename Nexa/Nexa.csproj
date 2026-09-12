@@ -302,6 +302,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddGroupMember.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddGroupMember.Designer.cs">
+      <DependentUpon>AddGroupMember.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AddGroupMembers.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddGroupMembers.Designer.cs">
+      <DependentUpon>AddGroupMembers.cs</DependentUpon>
+    </Compile>
     <Compile Include="BanUser.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -309,6 +321,12 @@
       <DependentUpon>BanUser.cs</DependentUpon>
     </Compile>
     <Compile Include="ChatMessage.cs" />
+    <Compile Include="CreateGroup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CreateGroup.Designer.cs">
+      <DependentUpon>CreateGroup.cs</DependentUpon>
+    </Compile>
     <Compile Include="CurrentUser.cs" />
     <Compile Include="EditInformation.cs">
       <SubType>Form</SubType>
@@ -334,11 +352,20 @@
     <Compile Include="Form2.Designer.cs">
       <DependentUpon>Form2.cs</DependentUpon>
     </Compile>
+    <Compile Include="GroupInfo.cs" />
+    <Compile Include="GroupMessage.cs" />
+    <Compile Include="HistoryUser.cs" />
     <Compile Include="IncomingCall.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="IncomingCall.Designer.cs">
       <DependentUpon>IncomingCall.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LoginHistoryForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LoginHistoryForm.Designer.cs">
+      <DependentUpon>LoginHistoryForm.cs</DependentUpon>
     </Compile>
     <Compile Include="MessageReaction.cs" />
     <Compile Include="MyInformation.cs">
@@ -374,14 +401,24 @@
     <Compile Include="StoryViewer.Designer.cs">
       <DependentUpon>StoryViewer.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserItem.cs" />
     <Compile Include="VideoCallForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="VideoCallForm.Designer.cs">
       <DependentUpon>VideoCallForm.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="AddGroupMember.resx">
+      <DependentUpon>AddGroupMember.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddGroupMembers.resx">
+      <DependentUpon>AddGroupMembers.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="BanUser.resx">
       <DependentUpon>BanUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CreateGroup.resx">
+      <DependentUpon>CreateGroup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EditInformation.resx">
       <DependentUpon>EditInformation.cs</DependentUpon>
@@ -397,6 +434,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="IncomingCall.resx">
       <DependentUpon>IncomingCall.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LoginHistoryForm.resx">
+      <DependentUpon>LoginHistoryForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MyInformation.resx">
       <DependentUpon>MyInformation.cs</DependentUpon>

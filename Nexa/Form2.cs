@@ -171,6 +171,7 @@ namespace Nexa
                             YourID,
                             PhoneNumber,
                             Password,
+                            Bio,
                             ProfilePhoto
                         )
                         VALUES
@@ -179,6 +180,7 @@ namespace Nexa
                             @YourID,
                             @PhoneNumber,
                             @Password,
+                            @Bio,
                             @ProfilePhoto
                         )";
 
@@ -212,6 +214,16 @@ namespace Nexa
                             255
                         ).Value =
                             txtPassword.Text;
+
+                        insertCmd.Parameters.Add(
+                            "@Bio",
+                            SqlDbType.NVarChar,
+                            500
+                        ).Value =
+                            string.IsNullOrWhiteSpace(
+                                txtBio.Text)
+                            ? (object)DBNull.Value
+                            : txtBio.Text.Trim();
 
                         if (!string.IsNullOrWhiteSpace(
                             selectedPhotoPath))

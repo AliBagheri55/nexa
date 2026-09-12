@@ -359,5 +359,12 @@ namespace Nexa
                     MessageBoxIcon.Error);
             }
         }
+
+        private void btnBack_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            frmLogin frmLogin = new frmLogin();
+            frmLogin.ShowDialog();
+        }
     }
 }

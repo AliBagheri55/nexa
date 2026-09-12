@@ -32,18 +32,21 @@ namespace Nexa
                 return;
             }
 
-            using (SqlConnection con = new SqlConnection(connectionString))
+            using (SqlConnection con =
+                   new SqlConnection(connectionString))
             {
                 string query = @"
                     SELECT
                         FirstAndLastName,
                         YourID,
                         PhoneNumber,
+                        Bio,
                         ProfilePhoto
                     FROM Users
                     WHERE Id = @Id";
 
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlCommand cmd =
+                       new SqlCommand(query, con))
                 {
                     cmd.Parameters.Add("@Id", SqlDbType.Int)
                         .Value = CurrentUser.Id;
@@ -52,7 +55,8 @@ namespace Nexa
                     {
                         con.Open();
 
-                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        using (SqlDataReader reader =
+                               cmd.ExecuteReader())
                         {
                             if (reader.Read())
                             {
@@ -70,6 +74,14 @@ namespace Nexa
                                     "Phone: " +
                                     reader["PhoneNumber"].ToString());
 
+                                string bio =
+                                    reader["Bio"] == DBNull.Value
+                                    ? "Bio: هنوز بیویی ثبت نشده است."
+                                    : "Bio: " +
+                                      reader["Bio"].ToString();
+
+                                listBox1.Items.Add(bio);
+
                                 if (pictureBox1.Image != null)
                                 {
                                     pictureBox1.Image.Dispose();
@@ -86,7 +98,7 @@ namespace Nexa
                                         if (File.Exists(photoPath))
                                         {
                                             using (Image tempImage =
-                                                Image.FromFile(photoPath))
+                                                   Image.FromFile(photoPath))
                                             {
                                                 pictureBox1.Image =
                                                     new Bitmap(tempImage);
@@ -105,7 +117,8 @@ namespace Nexa
                     catch (Exception ex)
                     {
                         MessageBox.Show(
-                            "خطا:\n\n" + ex.Message);
+                            "خطا:\n\n" +
+                            ex.Message);
                     }
                 }
             }
@@ -115,7 +128,8 @@ namespace Nexa
         {
             Hide();
 
-            EditInformation edit = new EditInformation();
+            EditInformation edit =
+                new EditInformation();
 
             edit.ShowDialog();
 
@@ -124,7 +138,8 @@ namespace Nexa
             LoadUserInformation();
         }
 
-        protected override void OnFormClosed(FormClosedEventArgs e)
+        protected override void OnFormClosed(
+            FormClosedEventArgs e)
         {
             if (pictureBox1.Image != null)
             {
@@ -137,8 +152,11 @@ namespace Nexa
 
         private void btnBack_Click(object sender, EventArgs e)
         {
-            this.Hide();
-            Nexa nexa= new Nexa();
+            Hide();
+
+            Nexa nexa =
+                new Nexa();
+
             nexa.ShowDialog();
         }
     }

@@ -42,23 +42,10 @@
             this.flowStories = new System.Windows.Forms.FlowLayoutPanel();
             this.btnAddStory = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.btnDelete = new System.Windows.Forms.Button();
-            this.btnGIF = new System.Windows.Forms.Button();
-            this.btnPinmessages = new System.Windows.Forms.Button();
-            this.btnVoicemessage = new System.Windows.Forms.Button();
             this.btnSound = new System.Windows.Forms.Button();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.btnEmoji = new System.Windows.Forms.Button();
-            this.btnLocation = new System.Windows.Forms.Button();
-            this.btnSendImage = new System.Windows.Forms.Button();
-            this.btnFile = new System.Windows.Forms.Button();
-            this.btnVideoCall = new System.Windows.Forms.Button();
-            this.btnVoice = new System.Windows.Forms.Button();
             this.txtYourMessage = new System.Windows.Forms.TextBox();
-            this.btnSend = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -68,15 +55,31 @@
             this.myInformationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.banUserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.savedMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loginHistoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.creatorToGroupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.btnDelete = new System.Windows.Forms.Button();
+            this.btnGIF = new System.Windows.Forms.Button();
+            this.btnPinmessages = new System.Windows.Forms.Button();
+            this.btnVoicemessage = new System.Windows.Forms.Button();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.btnEmoji = new System.Windows.Forms.Button();
+            this.btnLocation = new System.Windows.Forms.Button();
+            this.btnSendImage = new System.Windows.Forms.Button();
+            this.btnFile = new System.Windows.Forms.Button();
+            this.btnVideoCall = new System.Windows.Forms.Button();
+            this.btnVoice = new System.Windows.Forms.Button();
+            this.btnSend = new System.Windows.Forms.Button();
+            this.addToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -120,7 +123,9 @@
             this.listHistory.Name = "listHistory";
             this.listHistory.Size = new System.Drawing.Size(383, 324);
             this.listHistory.TabIndex = 3;
+            this.listHistory.SelectedIndexChanged += new System.EventHandler(this.listHistory_SelectedIndexChanged);
             this.listHistory.DoubleClick += new System.EventHandler(this.listHistory_DoubleClick_2);
+            this.listHistory.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listHistory_MouseDown);
             // 
             // groupBox4
             // 
@@ -226,6 +231,145 @@
             this.groupBox3.Text = "Messages";
             this.groupBox3.Enter += new System.EventHandler(this.groupBox3_Enter);
             // 
+            // btnSound
+            // 
+            this.btnSound.Location = new System.Drawing.Point(318, 448);
+            this.btnSound.Name = "btnSound";
+            this.btnSound.Size = new System.Drawing.Size(83, 42);
+            this.btnSound.TabIndex = 16;
+            this.btnSound.Text = "صدا";
+            this.btnSound.UseVisualStyleBackColor = true;
+            this.btnSound.Click += new System.EventHandler(this.btnSound_Click);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(588, 371);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(113, 16);
+            this.label5.TabIndex = 14;
+            this.label5.Text = "No messages yet";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(157, 287);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(113, 16);
+            this.label4.TabIndex = 13;
+            this.label4.Text = "No messages yet";
+            // 
+            // txtYourMessage
+            // 
+            this.txtYourMessage.Location = new System.Drawing.Point(13, 41);
+            this.txtYourMessage.Multiline = true;
+            this.txtYourMessage.Name = "txtYourMessage";
+            this.txtYourMessage.Size = new System.Drawing.Size(388, 401);
+            this.txtYourMessage.TabIndex = 6;
+            this.txtYourMessage.TextChanged += new System.EventHandler(this.txtYourMessage_TextChanged);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(455, 21);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(0, 16);
+            this.label3.TabIndex = 4;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(404, 21);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(54, 16);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "Answer:";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(10, 21);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(102, 16);
+            this.label1.TabIndex = 2;
+            this.label1.Text = "Your Messages";
+            // 
+            // listAnswer
+            // 
+            this.listAnswer.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.listAnswer.FormattingEnabled = true;
+            this.listAnswer.ItemHeight = 35;
+            this.listAnswer.Location = new System.Drawing.Point(407, 41);
+            this.listAnswer.Name = "listAnswer";
+            this.listAnswer.Size = new System.Drawing.Size(432, 564);
+            this.listAnswer.TabIndex = 1;
+            this.listAnswer.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listAnswer_DrawItem);
+            this.listAnswer.SelectedIndexChanged += new System.EventHandler(this.listAnswer_SelectedIndexChanged);
+            this.listAnswer.DoubleClick += new System.EventHandler(this.listAnswer_DoubleClick);
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem1});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(1293, 28);
+            this.menuStrip1.TabIndex = 2;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.myInformationToolStripMenuItem,
+            this.banUserToolStripMenuItem,
+            this.savedMessagesToolStripMenuItem,
+            this.loginHistoryToolStripMenuItem,
+            this.creatorToGroupToolStripMenuItem,
+            this.addToolStripMenuItem});
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(32, 24);
+            this.toolStripMenuItem1.Text = "...";
+            // 
+            // myInformationToolStripMenuItem
+            // 
+            this.myInformationToolStripMenuItem.Name = "myInformationToolStripMenuItem";
+            this.myInformationToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.myInformationToolStripMenuItem.Text = "My Information";
+            this.myInformationToolStripMenuItem.Click += new System.EventHandler(this.myInformationToolStripMenuItem_Click);
+            // 
+            // banUserToolStripMenuItem
+            // 
+            this.banUserToolStripMenuItem.Name = "banUserToolStripMenuItem";
+            this.banUserToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.banUserToolStripMenuItem.Text = "Ban user";
+            this.banUserToolStripMenuItem.Click += new System.EventHandler(this.banUserToolStripMenuItem_Click);
+            // 
+            // savedMessagesToolStripMenuItem
+            // 
+            this.savedMessagesToolStripMenuItem.Name = "savedMessagesToolStripMenuItem";
+            this.savedMessagesToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.savedMessagesToolStripMenuItem.Text = "Saved Messages";
+            this.savedMessagesToolStripMenuItem.Click += new System.EventHandler(this.savedMessagesToolStripMenuItem_Click);
+            // 
+            // loginHistoryToolStripMenuItem
+            // 
+            this.loginHistoryToolStripMenuItem.Name = "loginHistoryToolStripMenuItem";
+            this.loginHistoryToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.loginHistoryToolStripMenuItem.Text = "Login History";
+            this.loginHistoryToolStripMenuItem.Click += new System.EventHandler(this.loginHistoryToolStripMenuItem_Click);
+            // 
+            // creatorToGroupToolStripMenuItem
+            // 
+            this.creatorToGroupToolStripMenuItem.Name = "creatorToGroupToolStripMenuItem";
+            this.creatorToGroupToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.creatorToGroupToolStripMenuItem.Text = "CreatorToGroup";
+            this.creatorToGroupToolStripMenuItem.Click += new System.EventHandler(this.creatorToGroupToolStripMenuItem_Click);
+            // 
+            // timer1
+            // 
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick_1);
+            // 
             // btnDelete
             // 
             this.btnDelete.Image = global::Nexa.Properties.Resources.waste_bin_delete_remove_recycle_icon_123840;
@@ -266,16 +410,6 @@
             this.btnVoicemessage.UseVisualStyleBackColor = true;
             this.btnVoicemessage.Click += new System.EventHandler(this.btnVoicemessage_Click);
             // 
-            // btnSound
-            // 
-            this.btnSound.Location = new System.Drawing.Point(318, 448);
-            this.btnSound.Name = "btnSound";
-            this.btnSound.Size = new System.Drawing.Size(83, 42);
-            this.btnSound.TabIndex = 16;
-            this.btnSound.Text = "صدا";
-            this.btnSound.UseVisualStyleBackColor = true;
-            this.btnSound.Click += new System.EventHandler(this.btnSound_Click);
-            // 
             // pictureBox2
             // 
             this.pictureBox2.Image = global::Nexa.Properties.Resources.Nexa;
@@ -285,24 +419,6 @@
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox2.TabIndex = 15;
             this.pictureBox2.TabStop = false;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(588, 371);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(113, 16);
-            this.label5.TabIndex = 14;
-            this.label5.Text = "No messages yet";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(157, 287);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(113, 16);
-            this.label4.TabIndex = 13;
-            this.label4.Text = "No messages yet";
             // 
             // pictureBox1
             // 
@@ -374,15 +490,6 @@
             this.btnVoice.UseVisualStyleBackColor = true;
             this.btnVoice.Click += new System.EventHandler(this.btnVoice_Click);
             // 
-            // txtYourMessage
-            // 
-            this.txtYourMessage.Location = new System.Drawing.Point(13, 41);
-            this.txtYourMessage.Multiline = true;
-            this.txtYourMessage.Name = "txtYourMessage";
-            this.txtYourMessage.Size = new System.Drawing.Size(388, 401);
-            this.txtYourMessage.TabIndex = 6;
-            this.txtYourMessage.TextChanged += new System.EventHandler(this.txtYourMessage_TextChanged);
-            // 
             // btnSend
             // 
             this.btnSend.Image = global::Nexa.Properties.Resources.send_message_icon_250990;
@@ -395,86 +502,12 @@
             this.btnSend.UseVisualStyleBackColor = true;
             this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
             // 
-            // label3
+            // addToolStripMenuItem
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(455, 21);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(0, 16);
-            this.label3.TabIndex = 4;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(404, 21);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(54, 16);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Answer:";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(10, 21);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(102, 16);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "Your Messages";
-            // 
-            // listAnswer
-            // 
-            this.listAnswer.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
-            this.listAnswer.FormattingEnabled = true;
-            this.listAnswer.ItemHeight = 35;
-            this.listAnswer.Location = new System.Drawing.Point(407, 41);
-            this.listAnswer.Name = "listAnswer";
-            this.listAnswer.Size = new System.Drawing.Size(432, 564);
-            this.listAnswer.TabIndex = 1;
-            this.listAnswer.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listAnswer_DrawItem);
-            this.listAnswer.SelectedIndexChanged += new System.EventHandler(this.listAnswer_SelectedIndexChanged);
-            this.listAnswer.DoubleClick += new System.EventHandler(this.listAnswer_DoubleClick);
-            // 
-            // menuStrip1
-            // 
-            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem1});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1293, 28);
-            this.menuStrip1.TabIndex = 2;
-            this.menuStrip1.Text = "menuStrip1";
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.myInformationToolStripMenuItem,
-            this.banUserToolStripMenuItem,
-            this.savedMessagesToolStripMenuItem});
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(32, 24);
-            this.toolStripMenuItem1.Text = "...";
-            // 
-            // myInformationToolStripMenuItem
-            // 
-            this.myInformationToolStripMenuItem.Name = "myInformationToolStripMenuItem";
-            this.myInformationToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.myInformationToolStripMenuItem.Text = "My Information";
-            this.myInformationToolStripMenuItem.Click += new System.EventHandler(this.myInformationToolStripMenuItem_Click);
-            // 
-            // banUserToolStripMenuItem
-            // 
-            this.banUserToolStripMenuItem.Name = "banUserToolStripMenuItem";
-            this.banUserToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.banUserToolStripMenuItem.Text = "Ban user";
-            this.banUserToolStripMenuItem.Click += new System.EventHandler(this.banUserToolStripMenuItem_Click);
-            // 
-            // savedMessagesToolStripMenuItem
-            // 
-            this.savedMessagesToolStripMenuItem.Name = "savedMessagesToolStripMenuItem";
-            this.savedMessagesToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.savedMessagesToolStripMenuItem.Text = "Saved Messages";
-            this.savedMessagesToolStripMenuItem.Click += new System.EventHandler(this.savedMessagesToolStripMenuItem_Click);
+            this.addToolStripMenuItem.Name = "addToolStripMenuItem";
+            this.addToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.addToolStripMenuItem.Text = "Add to Group";
+            this.addToolStripMenuItem.Click += new System.EventHandler(this.addToolStripMenuItem_Click);
             // 
             // Nexa
             // 
@@ -498,10 +531,10 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -525,7 +558,6 @@
         private System.Windows.Forms.Button btnAddStory;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem myInformationToolStripMenuItem;
         private System.Windows.Forms.TextBox txtYourMessage;
         public System.Windows.Forms.ListBox listAnswer;
         private System.Windows.Forms.Timer timer1;
@@ -548,5 +580,9 @@
         private System.Windows.Forms.Button btnPinmessages;
         private System.Windows.Forms.Button btnVoicemessage;
         private System.Windows.Forms.ToolStripMenuItem savedMessagesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loginHistoryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem myInformationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem creatorToGroupToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addToolStripMenuItem;
     }
 }

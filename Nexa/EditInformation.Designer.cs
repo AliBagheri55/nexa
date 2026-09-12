@@ -41,6 +41,8 @@
             this.lblPassword = new System.Windows.Forms.Label();
             this.btnPassShow = new System.Windows.Forms.Button();
             this.pickphoto = new System.Windows.Forms.PictureBox();
+            this.txtBio = new System.Windows.Forms.TextBox();
+            this.lblBio = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pickphoto)).BeginInit();
             this.SuspendLayout();
             // 
@@ -57,7 +59,7 @@
             // 
             // btnOkEdit
             // 
-            this.btnOkEdit.Location = new System.Drawing.Point(134, 485);
+            this.btnOkEdit.Location = new System.Drawing.Point(134, 526);
             this.btnOkEdit.Name = "btnOkEdit";
             this.btnOkEdit.Size = new System.Drawing.Size(137, 39);
             this.btnOkEdit.TabIndex = 1;
@@ -67,14 +69,14 @@
             // 
             // txtPassword
             // 
-            this.txtPassword.Location = new System.Drawing.Point(28, 416);
+            this.txtPassword.Location = new System.Drawing.Point(28, 457);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.Size = new System.Drawing.Size(279, 22);
             this.txtPassword.TabIndex = 2;
             // 
             // txtPhone
             // 
-            this.txtPhone.Location = new System.Drawing.Point(28, 350);
+            this.txtPhone.Location = new System.Drawing.Point(28, 391);
             this.txtPhone.Name = "txtPhone";
             this.txtPhone.Size = new System.Drawing.Size(351, 22);
             this.txtPhone.TabIndex = 3;
@@ -124,7 +126,7 @@
             // lblPhon
             // 
             this.lblPhon.AutoSize = true;
-            this.lblPhon.Location = new System.Drawing.Point(25, 331);
+            this.lblPhon.Location = new System.Drawing.Point(25, 372);
             this.lblPhon.Name = "lblPhon";
             this.lblPhon.Size = new System.Drawing.Size(46, 16);
             this.lblPhon.TabIndex = 10;
@@ -133,7 +135,7 @@
             // lblPassword
             // 
             this.lblPassword.AutoSize = true;
-            this.lblPassword.Location = new System.Drawing.Point(25, 397);
+            this.lblPassword.Location = new System.Drawing.Point(25, 438);
             this.lblPassword.Name = "lblPassword";
             this.lblPassword.Size = new System.Drawing.Size(67, 16);
             this.lblPassword.TabIndex = 11;
@@ -142,7 +144,7 @@
             // btnPassShow
             // 
             this.btnPassShow.Image = global::Nexa.Properties.Resources.eye_show_icon_191607;
-            this.btnPassShow.Location = new System.Drawing.Point(313, 416);
+            this.btnPassShow.Location = new System.Drawing.Point(313, 457);
             this.btnPassShow.Name = "btnPassShow";
             this.btnPassShow.Size = new System.Drawing.Size(66, 23);
             this.btnPassShow.TabIndex = 12;
@@ -157,11 +159,29 @@
             this.pickphoto.TabIndex = 6;
             this.pickphoto.TabStop = false;
             // 
+            // txtBio
+            // 
+            this.txtBio.Location = new System.Drawing.Point(28, 337);
+            this.txtBio.Name = "txtBio";
+            this.txtBio.Size = new System.Drawing.Size(351, 22);
+            this.txtBio.TabIndex = 13;
+            // 
+            // lblBio
+            // 
+            this.lblBio.AutoSize = true;
+            this.lblBio.Location = new System.Drawing.Point(29, 318);
+            this.lblBio.Name = "lblBio";
+            this.lblBio.Size = new System.Drawing.Size(27, 16);
+            this.lblBio.TabIndex = 14;
+            this.lblBio.Text = "Bio";
+            // 
             // EditInformation
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(406, 621);
+            this.Controls.Add(this.lblBio);
+            this.Controls.Add(this.txtBio);
             this.Controls.Add(this.btnPassShow);
             this.Controls.Add(this.lblPassword);
             this.Controls.Add(this.lblPhon);
@@ -200,5 +220,7 @@
         private System.Windows.Forms.Label lblPhon;
         private System.Windows.Forms.Label lblPassword;
         private System.Windows.Forms.Button btnPassShow;
+        private System.Windows.Forms.TextBox txtBio;
+        private System.Windows.Forms.Label lblBio;
     }
 }

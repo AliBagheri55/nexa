@@ -55,6 +55,8 @@
             this.picPhoto = new System.Windows.Forms.PictureBox();
             this.picSecurityCode = new System.Windows.Forms.PictureBox();
             this.btnCreate = new System.Windows.Forms.Button();
+            this.txtBio = new System.Windows.Forms.TextBox();
+            this.lblBio = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
@@ -68,7 +70,7 @@
             // lbllBack
             // 
             this.lbllBack.AutoSize = true;
-            this.lbllBack.Location = new System.Drawing.Point(182, 826);
+            this.lbllBack.Location = new System.Drawing.Point(180, 740);
             this.lbllBack.Name = "lbllBack";
             this.lbllBack.Size = new System.Drawing.Size(38, 16);
             this.lbllBack.TabIndex = 1;
@@ -78,21 +80,21 @@
             // 
             // txtId
             // 
-            this.txtId.Location = new System.Drawing.Point(64, 342);
+            this.txtId.Location = new System.Drawing.Point(64, 366);
             this.txtId.Name = "txtId";
             this.txtId.Size = new System.Drawing.Size(277, 22);
             this.txtId.TabIndex = 2;
             // 
             // txtRepeatPassword
             // 
-            this.txtRepeatPassword.Location = new System.Drawing.Point(64, 558);
+            this.txtRepeatPassword.Location = new System.Drawing.Point(64, 511);
             this.txtRepeatPassword.Name = "txtRepeatPassword";
             this.txtRepeatPassword.Size = new System.Drawing.Size(277, 22);
             this.txtRepeatPassword.TabIndex = 3;
             // 
             // txtPassword
             // 
-            this.txtPassword.Location = new System.Drawing.Point(64, 485);
+            this.txtPassword.Location = new System.Drawing.Point(64, 461);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.Size = new System.Drawing.Size(277, 22);
             this.txtPassword.TabIndex = 4;
@@ -107,14 +109,14 @@
             // 
             // txtSecurityCode
             // 
-            this.txtSecurityCode.Location = new System.Drawing.Point(64, 625);
+            this.txtSecurityCode.Location = new System.Drawing.Point(63, 559);
             this.txtSecurityCode.Name = "txtSecurityCode";
             this.txtSecurityCode.Size = new System.Drawing.Size(277, 22);
             this.txtSecurityCode.TabIndex = 6;
             // 
             // txtPhoneNumber
             // 
-            this.txtPhoneNumber.Location = new System.Drawing.Point(64, 412);
+            this.txtPhoneNumber.Location = new System.Drawing.Point(64, 411);
             this.txtPhoneNumber.Name = "txtPhoneNumber";
             this.txtPhoneNumber.Size = new System.Drawing.Size(277, 22);
             this.txtPhoneNumber.TabIndex = 7;
@@ -132,7 +134,7 @@
             // lblId
             // 
             this.lblId.AutoSize = true;
-            this.lblId.Location = new System.Drawing.Point(90, 323);
+            this.lblId.Location = new System.Drawing.Point(90, 347);
             this.lblId.Name = "lblId";
             this.lblId.Size = new System.Drawing.Size(51, 16);
             this.lblId.TabIndex = 12;
@@ -141,7 +143,7 @@
             // lblPhoneNumber
             // 
             this.lblPhoneNumber.AutoSize = true;
-            this.lblPhoneNumber.Location = new System.Drawing.Point(90, 393);
+            this.lblPhoneNumber.Location = new System.Drawing.Point(90, 392);
             this.lblPhoneNumber.Name = "lblPhoneNumber";
             this.lblPhoneNumber.Size = new System.Drawing.Size(94, 16);
             this.lblPhoneNumber.TabIndex = 13;
@@ -150,7 +152,7 @@
             // lblPassword
             // 
             this.lblPassword.AutoSize = true;
-            this.lblPassword.Location = new System.Drawing.Point(89, 463);
+            this.lblPassword.Location = new System.Drawing.Point(89, 439);
             this.lblPassword.Name = "lblPassword";
             this.lblPassword.Size = new System.Drawing.Size(67, 16);
             this.lblPassword.TabIndex = 14;
@@ -159,7 +161,7 @@
             // lblRepeatPassword
             // 
             this.lblRepeatPassword.AutoSize = true;
-            this.lblRepeatPassword.Location = new System.Drawing.Point(88, 536);
+            this.lblRepeatPassword.Location = new System.Drawing.Point(88, 489);
             this.lblRepeatPassword.Name = "lblRepeatPassword";
             this.lblRepeatPassword.Size = new System.Drawing.Size(114, 16);
             this.lblRepeatPassword.TabIndex = 15;
@@ -168,7 +170,7 @@
             // lblSecurityCode
             // 
             this.lblSecurityCode.AutoSize = true;
-            this.lblSecurityCode.Location = new System.Drawing.Point(89, 603);
+            this.lblSecurityCode.Location = new System.Drawing.Point(88, 537);
             this.lblSecurityCode.Name = "lblSecurityCode";
             this.lblSecurityCode.Size = new System.Drawing.Size(89, 16);
             this.lblSecurityCode.TabIndex = 16;
@@ -211,7 +213,7 @@
             // pictureBox6
             // 
             this.pictureBox6.Image = global::Nexa.Properties.Resources._3741738_assurance_bussiness_ecommerce_marketplace_onlinestore_store_108896;
-            this.pictureBox6.Location = new System.Drawing.Point(68, 601);
+            this.pictureBox6.Location = new System.Drawing.Point(67, 535);
             this.pictureBox6.Name = "pictureBox6";
             this.pictureBox6.Size = new System.Drawing.Size(20, 21);
             this.pictureBox6.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -221,7 +223,7 @@
             // pictureBox5
             // 
             this.pictureBox5.Image = global::Nexa.Properties.Resources.password_protect_secure_security_privacy_lock_padlock_icon_219328;
-            this.pictureBox5.Location = new System.Drawing.Point(64, 532);
+            this.pictureBox5.Location = new System.Drawing.Point(64, 485);
             this.pictureBox5.Name = "pictureBox5";
             this.pictureBox5.Size = new System.Drawing.Size(24, 23);
             this.pictureBox5.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -231,7 +233,7 @@
             // pictureBox4
             // 
             this.pictureBox4.Image = global::Nexa.Properties.Resources.password_protect_secure_security_privacy_lock_padlock_icon_219328;
-            this.pictureBox4.Location = new System.Drawing.Point(64, 459);
+            this.pictureBox4.Location = new System.Drawing.Point(64, 435);
             this.pictureBox4.Name = "pictureBox4";
             this.pictureBox4.Size = new System.Drawing.Size(24, 23);
             this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -241,7 +243,7 @@
             // pictureBox3
             // 
             this.pictureBox3.Image = global::Nexa.Properties.Resources.phone_4307;
-            this.pictureBox3.Location = new System.Drawing.Point(66, 392);
+            this.pictureBox3.Location = new System.Drawing.Point(66, 391);
             this.pictureBox3.Name = "pictureBox3";
             this.pictureBox3.Size = new System.Drawing.Size(21, 16);
             this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -251,7 +253,7 @@
             // pictureBox2
             // 
             this.pictureBox2.Image = global::Nexa.Properties.Resources.user_id_icon_34334;
-            this.pictureBox2.Location = new System.Drawing.Point(63, 318);
+            this.pictureBox2.Location = new System.Drawing.Point(63, 342);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(28, 23);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -293,9 +295,9 @@
             // 
             // picSecurityCode
             // 
-            this.picSecurityCode.Location = new System.Drawing.Point(93, 653);
+            this.picSecurityCode.Location = new System.Drawing.Point(92, 587);
             this.picSecurityCode.Name = "picSecurityCode";
-            this.picSecurityCode.Size = new System.Drawing.Size(216, 92);
+            this.picSecurityCode.Size = new System.Drawing.Size(216, 82);
             this.picSecurityCode.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.picSecurityCode.TabIndex = 8;
             this.picSecurityCode.TabStop = false;
@@ -304,7 +306,7 @@
             // 
             this.btnCreate.Image = global::Nexa.Properties.Resources._1490793813_user_interface20_82328;
             this.btnCreate.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btnCreate.Location = new System.Drawing.Point(153, 751);
+            this.btnCreate.Location = new System.Drawing.Point(151, 675);
             this.btnCreate.Name = "btnCreate";
             this.btnCreate.Size = new System.Drawing.Size(89, 37);
             this.btnCreate.TabIndex = 0;
@@ -313,12 +315,30 @@
             this.btnCreate.UseVisualStyleBackColor = true;
             this.btnCreate.Click += new System.EventHandler(this.btnCreate_Click);
             // 
+            // txtBio
+            // 
+            this.txtBio.Location = new System.Drawing.Point(64, 316);
+            this.txtBio.Name = "txtBio";
+            this.txtBio.Size = new System.Drawing.Size(277, 22);
+            this.txtBio.TabIndex = 26;
+            // 
+            // lblBio
+            // 
+            this.lblBio.AutoSize = true;
+            this.lblBio.Location = new System.Drawing.Point(65, 297);
+            this.lblBio.Name = "lblBio";
+            this.lblBio.Size = new System.Drawing.Size(27, 16);
+            this.lblBio.TabIndex = 27;
+            this.lblBio.Text = "Bio";
+            // 
             // CreateAnAccount
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.ClientSize = new System.Drawing.Size(415, 851);
+            this.ClientSize = new System.Drawing.Size(415, 766);
+            this.Controls.Add(this.lblBio);
+            this.Controls.Add(this.txtBio);
             this.Controls.Add(this.pictureBox6);
             this.Controls.Add(this.pictureBox5);
             this.Controls.Add(this.pictureBox4);
@@ -391,5 +411,7 @@
         private System.Windows.Forms.PictureBox pictureBox4;
         private System.Windows.Forms.PictureBox pictureBox5;
         private System.Windows.Forms.PictureBox pictureBox6;
+        private System.Windows.Forms.TextBox txtBio;
+        private System.Windows.Forms.Label lblBio;
     }
 }

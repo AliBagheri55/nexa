@@ -40,7 +40,7 @@
             // 
             // btnUpdate
             // 
-            this.btnUpdate.Location = new System.Drawing.Point(168, 561);
+            this.btnUpdate.Location = new System.Drawing.Point(109, 298);
             this.btnUpdate.Name = "btnUpdate";
             this.btnUpdate.Size = new System.Drawing.Size(136, 37);
             this.btnUpdate.TabIndex = 0;
@@ -51,9 +51,9 @@
             // btnBack
             // 
             this.btnBack.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.btnBack.Location = new System.Drawing.Point(0, 610);
+            this.btnBack.Location = new System.Drawing.Point(0, 353);
             this.btnBack.Name = "btnBack";
-            this.btnBack.Size = new System.Drawing.Size(473, 33);
+            this.btnBack.Size = new System.Drawing.Size(363, 33);
             this.btnBack.TabIndex = 1;
             this.btnBack.Text = "Back";
             this.btnBack.UseVisualStyleBackColor = true;
@@ -65,7 +65,7 @@
             this.groMyInformation.Controls.Add(this.listBox1);
             this.groMyInformation.Location = new System.Drawing.Point(12, 12);
             this.groMyInformation.Name = "groMyInformation";
-            this.groMyInformation.Size = new System.Drawing.Size(449, 543);
+            this.groMyInformation.Size = new System.Drawing.Size(339, 280);
             this.groMyInformation.TabIndex = 2;
             this.groMyInformation.TabStop = false;
             this.groMyInformation.Text = "My Information";
@@ -73,7 +73,7 @@
             // pictureBox1
             // 
             this.pictureBox1.Image = global::Nexa.Properties.Resources._4092564_about_mobile_ui_profile_ui_user_website_1140331;
-            this.pictureBox1.Location = new System.Drawing.Point(143, 21);
+            this.pictureBox1.Location = new System.Drawing.Point(84, 21);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(149, 81);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -86,14 +86,14 @@
             this.listBox1.ItemHeight = 16;
             this.listBox1.Location = new System.Drawing.Point(11, 108);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(426, 420);
+            this.listBox1.Size = new System.Drawing.Size(315, 148);
             this.listBox1.TabIndex = 0;
             // 
             // MyInformation
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(473, 643);
+            this.ClientSize = new System.Drawing.Size(363, 386);
             this.Controls.Add(this.groMyInformation);
             this.Controls.Add(this.btnBack);
             this.Controls.Add(this.btnUpdate);

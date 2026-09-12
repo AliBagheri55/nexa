@@ -34,6 +34,8 @@ namespace Nexa
         private void EditInformation_Load(object sender, EventArgs e)
         {
             pickphoto.SizeMode = PictureBoxSizeMode.Zoom;
+            txtPassword.UseSystemPasswordChar = true;
+            txtPhone.Enabled = false;
 
             LoadUserInformation();
         }
@@ -47,7 +49,7 @@ namespace Nexa
             }
 
             using (SqlConnection con =
-                new SqlConnection(connectionString))
+                   new SqlConnection(connectionString))
             {
                 string query = @"
                     SELECT
@@ -55,40 +57,53 @@ namespace Nexa
                         YourID,
                         PhoneNumber,
                         Password,
+                        Bio,
                         ProfilePhoto
                     FROM Users
                     WHERE Id = @Id";
 
                 using (SqlCommand cmd =
-                    new SqlCommand(query, con))
+                       new SqlCommand(query, con))
                 {
                     cmd.Parameters.Add(
                         "@Id",
-                        SqlDbType.Int
-                    ).Value = CurrentUser.Id;
+                        SqlDbType.Int).Value =
+                        CurrentUser.Id;
 
                     try
                     {
                         con.Open();
 
                         using (SqlDataReader reader =
-                            cmd.ExecuteReader())
+                               cmd.ExecuteReader())
                         {
                             if (reader.Read())
                             {
                                 txtUsername.Text =
-                                    reader["FirstAndLastName"]?.ToString() ?? "";
+                                    reader["FirstAndLastName"] == DBNull.Value
+                                    ? ""
+                                    : reader["FirstAndLastName"].ToString();
 
                                 txtId.Text =
-                                    reader["YourID"]?.ToString() ?? "";
+                                    reader["YourID"] == DBNull.Value
+                                    ? ""
+                                    : reader["YourID"].ToString();
 
                                 txtPhone.Text =
-                                    reader["PhoneNumber"]?.ToString() ?? "";
+                                    reader["PhoneNumber"] == DBNull.Value
+                                    ? ""
+                                    : reader["PhoneNumber"].ToString();
 
                                 txtPassword.Text =
-                                    reader["Password"]?.ToString() ?? "";
+                                    reader["Password"] == DBNull.Value
+                                    ? ""
+                                    : reader["Password"].ToString();
 
-                                // عکس فعلی
+                                txtBio.Text =
+                                    reader["Bio"] == DBNull.Value
+                                    ? ""
+                                    : reader["Bio"].ToString();
+
                                 if (reader["ProfilePhoto"] != DBNull.Value)
                                 {
                                     string photoPath =
@@ -104,13 +119,12 @@ namespace Nexa
                                         }
 
                                         using (Image tempImage =
-                                            Image.FromFile(photoPath))
+                                               Image.FromFile(photoPath))
                                         {
                                             pickphoto.Image =
                                                 new Bitmap(tempImage);
                                         }
 
-                                        // مسیر عکس فعلی
                                         selectedPhotoPath = photoPath;
                                     }
                                 }
@@ -134,7 +148,7 @@ namespace Nexa
         private void btnEditProfile_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog openFileDialog =
-                new OpenFileDialog())
+                   new OpenFileDialog())
             {
                 openFileDialog.Title = "انتخاب عکس جدید";
 
@@ -151,25 +165,21 @@ namespace Nexa
                         string newPhotoPath =
                             openFileDialog.FileName;
 
-                        // اول عکس جدید را تست می‌کنیم
                         using (Image tempImage =
-                            Image.FromFile(newPhotoPath))
+                               Image.FromFile(newPhotoPath))
                         {
                             Bitmap newBitmap =
                                 new Bitmap(tempImage);
 
-                            // عکس قبلی را آزاد می‌کنیم
                             if (pickphoto.Image != null)
                             {
                                 pickphoto.Image.Dispose();
                                 pickphoto.Image = null;
                             }
 
-                            // عکس جدید
                             pickphoto.Image = newBitmap;
                         }
 
-                        // مسیر عکس جدید
                         selectedPhotoPath = newPhotoPath;
                     }
                     catch (Exception ex)
@@ -186,13 +196,11 @@ namespace Nexa
         {
             try
             {
-                // ابتدا اطلاعات متنی با C++
                 int result = UpdateUser(
                     CurrentUser.Id,
                     txtUsername.Text.Trim(),
                     txtId.Text.Trim(),
-                    txtPhone.Text.Trim()
-                );
+                    txtPhone.Text.Trim());
 
                 if (result != 1)
                 {
@@ -201,45 +209,50 @@ namespace Nexa
                         result,
                         "Nexa",
                         MessageBoxButtons.OK,
-                        MessageBoxIcon.Error
-                    );
+                        MessageBoxIcon.Error);
 
                     return;
                 }
 
-                // ذخیره مسیر عکس در SQL Server
                 using (SqlConnection con =
-                    new SqlConnection(connectionString))
+                       new SqlConnection(connectionString))
                 {
                     string query = @"
                         UPDATE Users
-                        SET ProfilePhoto = @ProfilePhoto
+                        SET
+                            Bio = @Bio,
+                            ProfilePhoto = @ProfilePhoto
                         WHERE Id = @Id";
 
                     using (SqlCommand cmd =
-                        new SqlCommand(query, con))
+                           new SqlCommand(query, con))
                     {
+                        cmd.Parameters.Add(
+                            "@Bio",
+                            SqlDbType.NVarChar,
+                            500).Value =
+                            string.IsNullOrWhiteSpace(txtBio.Text)
+                            ? (object)DBNull.Value
+                            : txtBio.Text.Trim();
+
                         cmd.Parameters.Add(
                             "@ProfilePhoto",
                             SqlDbType.NVarChar,
-                            -1
-                        ).Value =
+                            -1).Value =
                             string.IsNullOrWhiteSpace(selectedPhotoPath)
                             ? (object)DBNull.Value
                             : selectedPhotoPath;
 
                         cmd.Parameters.Add(
                             "@Id",
-                            SqlDbType.Int
-                        ).Value = CurrentUser.Id;
+                            SqlDbType.Int).Value =
+                            CurrentUser.Id;
 
                         con.Open();
-
                         cmd.ExecuteNonQuery();
                     }
                 }
 
-                // بروزرسانی اطلاعات کاربر فعلی
                 CurrentUser.Username =
                     txtUsername.Text.Trim();
 
@@ -247,11 +260,10 @@ namespace Nexa
                     txtPhone.Text.Trim();
 
                 MessageBox.Show(
-                    "اطلاعات و عکس با موفقیت بروزرسانی شد.",
+                    "اطلاعات با موفقیت بروزرسانی شد.",
                     "Nexa",
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Information
-                );
+                    MessageBoxIcon.Information);
 
                 Close();
             }
@@ -286,17 +298,18 @@ namespace Nexa
             base.OnFormClosed(e);
         }
 
-        private void EditInformation_Load_1(object sender, EventArgs e)
+        private void EditInformation_Load_1(
+            object sender,
+            EventArgs e)
         {
             txtPassword.UseSystemPasswordChar = true;
-            txtPhone.Enabled= false;
+            txtPhone.Enabled = false;
 
             LoadUserInformation();
         }
 
         private void btnPassShow_Click(object sender, EventArgs e)
         {
-
             txtPassword.UseSystemPasswordChar =
                 !txtPassword.UseSystemPasswordChar;
         }
@@ -304,8 +317,13 @@ namespace Nexa
         private void button1_Click(object sender, EventArgs e)
         {
             this.Hide();
-            MyInformation information=new MyInformation();
+
+            MyInformation information =
+                new MyInformation();
+
             information.ShowDialog();
+
+            this.Show();
         }
     }
 }
