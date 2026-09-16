@@ -13,6 +13,7 @@ namespace Nexa
         public string GroupBio { get; set; }
         public byte[] GroupPhoto { get; set; }
         public int CreatedBy { get; set; }
+        public string InviteCode { get; set; }
 
         public override string ToString()
         {

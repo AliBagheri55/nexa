@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Speech.Recognition;
 using System.Data.SqlClient;
+using System.Net.Http;
+using System.Net.Http.Json;
 using AForge.Video;
 using AForge.Video.DirectShow;
 using System.Drawing;
@@ -28,86 +30,49 @@ namespace Nexa
         private HubConnection callConnection;
         private WaveFileWriter waveWriter;
         private string voiceFilePath;
-
+        private readonly HttpClient apiClient =new HttpClient();
         private int currentUserId = 0;
-
         private WaveOutEvent voicePlayer;
         private WaveFileReader voiceReader;
         private string playingVoiceFile;
-
         private string currentUserYourID = "";
-
-        // =========================================================
-        // VIDEO MESSAGE
-        // =========================================================
-
         private FilterInfoCollection videoDevices;
         private VideoCaptureDevice videoSource;
-
-        // OpenCvSharp VideoWriter
         private OpenCvSharp.VideoWriter videoWriter;
-
         private string videoMessageFilePath;
-
         private bool isRecordingVideo = false;
-
         private Timer videoMessageTimer;
         private int videoSecondsRemaining = 20;
-
         private Form videoPreviewForm;
         private PictureBox videoPreviewPictureBox;
         private Label videoTimerLabel;
-
-        // =========================================================
-
         private int selectedUserId = 0;
-
-        private string connectionString =
-            @"Server=.;Database=Nexa;Trusted_Connection=True;TrustServerCertificate=True;";
-
+        private string connectionString =@"Server=.;Database=Nexa;Trusted_Connection=True;TrustServerCertificate=True;";
         private int lastMessageId = 0;
-
-        // =========================================================
-        // CONSTRUCTOR
-        // =========================================================
-
         public Nexa()
         {
             InitializeComponent();
+            apiClient.BaseAddress =new Uri("https://localhost:7264/");
             timer1.Interval = 1000;
             timer1.Tick += timer1_Tick;
             timer1.Start();
             currentUserId = CurrentUser.Id;
             userPhone = CurrentUser.PhoneNumber;
         }
-
         public Nexa(string phoneNumber)
         {
             InitializeComponent();
-
             userPhone = phoneNumber;
-
             if (CurrentUser.Id > 0)
             {
                 currentUserId = CurrentUser.Id;
                 userPhone = CurrentUser.PhoneNumber;
             }
         }
-
-        // =========================================================
-        // LOAD
-        // =========================================================
-
         private async void Nexa_Load(object sender, EventArgs e)
         {
-            CreateMessageContextMenu();
             try
             {
-                if (CurrentUser.Id > 0)
-                {
-                    currentUserId = CurrentUser.Id;
-                }
-
                 if (currentUserId == 0 &&
                     !string.IsNullOrWhiteSpace(userPhone))
                 {
@@ -125,7 +90,9 @@ namespace Nexa
                     return;
                 }
 
-                LoadChatHistory();
+                CreateMessageContextMenu();
+
+                await LoadChatHistoryFromDatabase();
 
                 LoadStories();
 
@@ -169,29 +136,28 @@ namespace Nexa
                 listAnswer.ItemHeight = 35;
 
                 timer1.Interval = 1000;
+
                 timer1.Start();
 
                 await ConnectToCallServer();
+
+                listHistory.MouseDown -=
+                    listHistory_MouseDown;
+
+                listHistory.MouseDown +=
+                    listHistory_MouseDown;
             }
             catch (Exception ex)
             {
                 MessageBox.Show(
                     "خطا در اجرای Nexa:\n\n" +
-                    ex.Message,
+                    ex.ToString(),
                     "Nexa",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
-            listHistory.MouseDown += listHistory_MouseDown;
         }
-
-        // =========================================================
-        // SPEECH
-        // =========================================================
-
-        private void Recognizer_SpeechRecognized(
-            object sender,
-            SpeechRecognizedEventArgs e)
+        private void Recognizer_SpeechRecognized(object sender,SpeechRecognizedEventArgs e)
         {
             if (e.Result == null)
                 return;
@@ -203,54 +169,37 @@ namespace Nexa
             {
                 Invoke(new Action(() =>
                 {
-                    txtYourMessage.AppendText(
-                        e.Result.Text + " ");
+                    txtYourMessage.AppendText(e.Result.Text + " ");
                 }));
 
                 return;
             }
 
-            txtYourMessage.AppendText(
-                e.Result.Text + " ");
+            txtYourMessage.AppendText(e.Result.Text + " ");
         }
-
-        private void Recognizer_RecognizeCompleted(
-            object sender,
-            RecognizeCompletedEventArgs e)
+        private void Recognizer_RecognizeCompleted(object sender,RecognizeCompletedEventArgs e)
         {
             if (InvokeRequired)
             {
                 Invoke(new Action(() =>
                 {
                     isListening = false;
-                    btnSound.Text = "🎙";
                 }));
-
                 return;
             }
-
             isListening = false;
-            btnSound.Text = "🎙";
         }
-
-        // =========================================================
-        // TIMER
-        // =========================================================
-
-        private async void timer1_Tick(
-            object sender,
-            EventArgs e)
+        private async void timer1_Tick(object sender,EventArgs e)
         {
             LoadNewMessages();
+            UpdateMyLastSeen();
+            if (selectedUserId > 0)
+            {
+                CheckSelectedUserStatus();
+            }
             RefreshReadStatuses();
-
             await ConnectToCallServer();
         }
-
-        // =========================================================
-        // CURRENT USER
-        // =========================================================
-
         private void GetCurrentUser()
         {
             try
@@ -258,9 +207,7 @@ namespace Nexa
                 if (CurrentUser.Id > 0)
                 {
                     currentUserId = CurrentUser.Id;
-
-                    using (SqlConnection con =
-                           new SqlConnection(connectionString))
+                    using (SqlConnection con =new SqlConnection(connectionString))
                     {
                         string query = @"
                             SELECT
@@ -270,8 +217,7 @@ namespace Nexa
                             FROM Users
                             WHERE Id = @Id";
 
-                        using (SqlCommand cmd =
-                               new SqlCommand(query, con))
+                        using (SqlCommand cmd =new SqlCommand(query, con))
                         {
                             cmd.Parameters.Add(
                                 "@Id",
@@ -377,11 +323,6 @@ namespace Nexa
                     MessageBoxIcon.Error);
             }
         }
-
-        // =========================================================
-        // BLOCK
-        // =========================================================
-
         private bool IsUserBlocked(int otherUserId)
         {
             if (currentUserId <= 0 ||
@@ -446,11 +387,6 @@ namespace Nexa
 
             return true;
         }
-
-        // =========================================================
-        // MY INFORMATION
-        // =========================================================
-
         private void myInformationToolStripMenuItem_Click(
             object sender,
             EventArgs e)
@@ -464,11 +400,6 @@ namespace Nexa
 
             Show();
         }
-
-        // =========================================================
-        // SEARCH
-        // =========================================================
-
         private void txtIdSearch_TextChanged(
             object sender,
             EventArgs e)
@@ -543,9 +474,9 @@ namespace Nexa
                 lstResults.Items.Count > 0;
         }
 
-        private void lstResults_DoubleClick(
-            object sender,
-            EventArgs e)
+        private async void lstResults_DoubleClick(
+     object sender,
+     EventArgs e)
         {
             if (lstResults.SelectedItem == null)
                 return;
@@ -581,49 +512,75 @@ namespace Nexa
                 return;
             }
 
+            // ذخیره در دیتابیس
             SaveChatHistory(otherUserId);
 
-            LoadChatHistory();
+            // گرفتن اطلاعات کاربر از SQL
+            ChatHistoryItem selectedItem =
+                GetUserForChatHistory(otherUserId);
 
-            ChatHistoryItem selectedItem = null;
+            if (selectedItem == null)
+            {
+                MessageBox.Show(
+                    "اطلاعات کاربر دریافت نشد.",
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
+                return;
+            }
+
+            // بررسی اینکه قبلاً داخل لیست نباشد
+            ChatHistoryItem existingItem = null;
 
             foreach (ChatHistoryItem item
                      in listHistory.Items)
             {
                 if (item.UserId == otherUserId)
                 {
-                    selectedItem = item;
+                    existingItem = item;
                     break;
                 }
             }
 
-            if (selectedItem != null)
+            // اگر نبود اضافه کن
+            if (existingItem == null)
             {
-                listHistory.SelectedItem =
-                    selectedItem;
-
-                selectedUserId =
-                    selectedItem.UserId;
-
-                label3.Text =
-                    selectedItem.FirstAndLastName;
-
-                LoadConversation();
-
-                MarkMessagesAsRead();
-
-                UpdateLastMessageId();
+                listHistory.Items.Add(selectedItem);
+                existingItem = selectedItem;
             }
 
+            // انتخاب کاربر
+            listHistory.SelectedItem =
+                existingItem;
+
+            selectedUserId =
+                existingItem.UserId;
+
+            label3.Text =
+                existingItem.FirstAndLastName;
+
+            // بارگذاری پیام‌های این کاربر
+            LoadConversation();
+
+            // خواندن پیام‌ها
+            MarkMessagesAsRead();
+
+            // آخرین پیام
+            UpdateLastMessageId();
+
+            // پاک کردن جستجو
             txtIdSearch.Clear();
             lstResults.Items.Clear();
             lstResults.Visible = false;
 
             UpdateEmptyMessagePanels();
 
+            listHistory.Refresh();
             listAnswer.Refresh();
-        }
 
+            await Task.CompletedTask;
+        }
         private int GetUserIdByYourID(string yourID)
         {
             try
@@ -667,11 +624,6 @@ namespace Nexa
 
             return 0;
         }
-
-        // =========================================================
-        // CHAT HISTORY
-        // =========================================================
-
         private void SaveChatHistory(int otherUserId)
         {
             if (currentUserId <= 0 ||
@@ -730,8 +682,7 @@ namespace Nexa
                     ex.Message);
             }
         }
-
-        private void LoadChatHistory()
+        private async Task LoadChatHistory()
         {
             listHistory.Items.Clear();
 
@@ -740,134 +691,144 @@ namespace Nexa
 
             try
             {
+                List<ApiChatItem> items =
+                    await GetChatHistoryFromApi(currentUserId);
+
+                foreach (ApiChatItem item in items)
+                {
+                    // =========================
+                    // کاربر
+                    // =========================
+
+                    if (item.Type == "User")
+                    {
+                        ChatHistoryItem chatItem =
+                            new ChatHistoryItem();
+
+                        chatItem.UserId =
+                            item.UserId;
+
+                        chatItem.YourID =
+                            item.YourID ?? "";
+
+                        chatItem.FirstAndLastName =
+                            item.FirstAndLastName ?? "";
+
+                        chatItem.IsBlocked =
+                            item.IsBlocked;
+
+                        listHistory.Items.Add(chatItem);
+                    }
+
+                    // =========================
+                    // گروه
+                    // =========================
+
+                    else if (item.Type == "Group")
+                    {
+                        GroupInfo group =
+                            new GroupInfo();
+
+                        group.Id =
+                            item.Id;
+
+                        group.GroupName =
+                            item.GroupName ?? "";
+
+                        group.GroupBio =
+                            item.GroupBio ?? "";
+
+                        group.CreatedBy =
+                            item.CreatedBy;
+
+                        group.InviteCode =
+                            item.InviteCode ?? "";
+
+                        // عکس گروه
+                        if (!string.IsNullOrWhiteSpace(
+                            item.GroupPhoto))
+                        {
+                            try
+                            {
+                                group.GroupPhoto =
+                                    Convert.FromBase64String(
+                                        item.GroupPhoto);
+                            }
+                            catch
+                            {
+                                group.GroupPhoto = null;
+                            }
+                        }
+                        else
+                        {
+                            group.GroupPhoto = null;
+                        }
+
+                        listHistory.Items.Add(group);
+                    }
+                }
+
+                listHistory.Refresh();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "خطا در بارگذاری تاریخچه از API:\n\n" +
+                    ex.Message,
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
+        private ChatHistoryItem GetUserForChatHistory(int userId)
+        {
+            try
+            {
                 using (SqlConnection con =
                        new SqlConnection(connectionString))
                 {
                     string query = @"
                 SELECT
-                    H.OtherUserId,
-                    U.YourID,
-                    U.FirstAndLastName,
-                    CASE
-                        WHEN B.Id IS NOT NULL
-                        THEN 1
-                        ELSE 0
-                    END AS IsBlocked
-                FROM ChatHistory H
-                INNER JOIN Users U
-                    ON U.Id = H.OtherUserId
-                LEFT JOIN UserBanList B
-                    ON B.UserId = H.UserId
-                    AND B.BannedUserId = H.OtherUserId
-                WHERE H.UserId = @UserId
-                ORDER BY H.Id ASC";
+                    Id,
+                    YourID,
+                    FirstAndLastName
+                FROM Users
+                WHERE Id = @Id";
 
                     using (SqlCommand cmd =
                            new SqlCommand(query, con))
                     {
                         cmd.Parameters.Add(
-                            "@UserId",
+                            "@Id",
                             SqlDbType.Int).Value =
-                            currentUserId;
+                            userId;
 
                         con.Open();
 
                         using (SqlDataReader reader =
                                cmd.ExecuteReader())
                         {
-                            while (reader.Read())
+                            if (reader.Read())
                             {
                                 ChatHistoryItem item =
                                     new ChatHistoryItem();
 
                                 item.UserId =
                                     Convert.ToInt32(
-                                        reader["OtherUserId"]);
-
-                                item.YourID =
-                                    reader["YourID"] ==
-                                    DBNull.Value
-                                    ? ""
-                                    : reader["YourID"].ToString();
-
-                                item.FirstAndLastName =
-                                    reader["FirstAndLastName"] ==
-                                    DBNull.Value
-                                    ? ""
-                                    : reader["FirstAndLastName"].ToString();
-
-                                item.IsBlocked =
-                                    reader["IsBlocked"] !=
-                                    DBNull.Value &&
-                                    Convert.ToInt32(
-                                        reader["IsBlocked"]) == 1;
-
-                                listHistory.Items.Add(item);
-                            }
-                        }
-                    }
-
-                    // =========================
-                    // بارگذاری گروه‌های کاربر
-                    // =========================
-
-                    string groupQuery = @"
-                SELECT
-                    G.Id,
-                    G.GroupName,
-                    G.GroupBio,
-                    G.GroupPhoto,
-                    G.CreatedBy
-                FROM Groups G
-                INNER JOIN GroupMembers GM
-                    ON G.Id = GM.GroupId
-                WHERE GM.UserId = @UserId
-                ORDER BY G.CreatedAt ASC";
-
-                    using (SqlCommand groupCmd =
-                           new SqlCommand(groupQuery, con))
-                    {
-                        groupCmd.Parameters.Add(
-                            "@UserId",
-                            SqlDbType.Int).Value =
-                            currentUserId;
-
-                        using (SqlDataReader reader =
-                               groupCmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                GroupInfo group =
-                                    new GroupInfo();
-
-                                group.Id =
-                                    Convert.ToInt32(
                                         reader["Id"]);
 
-                                group.GroupName =
-                                    reader["GroupName"] ==
-                                    DBNull.Value
-                                    ? ""
-                                    : reader["GroupName"].ToString();
+                                item.YourID =
+                                    reader["YourID"]?.ToString()
+                                    ?? "";
 
-                                group.GroupBio =
-                                    reader["GroupBio"] ==
-                                    DBNull.Value
-                                    ? ""
-                                    : reader["GroupBio"].ToString();
+                                item.FirstAndLastName =
+                                    reader["FirstAndLastName"]?.ToString()
+                                    ?? "";
 
-                                if (reader["GroupPhoto"] !=
-                                    DBNull.Value)
-                                {
-                                    group.GroupPhoto =
-                                        (byte[])reader["GroupPhoto"];
-                                }
+                                item.IsBlocked =
+                                    IsUserBlocked(userId);
 
-                                group.CreatedBy =
-                                    Convert.ToInt32(
-                                        reader["CreatedBy"]);
-
-                                listHistory.Items.Add(group);
+                                return item;
                             }
                         }
                     }
@@ -876,12 +837,14 @@ namespace Nexa
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    "خطا در بارگذاری تاریخچه:\n\n" +
+                    "خطا در دریافت اطلاعات کاربر:\n\n" +
                     ex.Message,
                     "Nexa",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
+
+            return null;
         }
         private void listHistory_DoubleClick_2(
        object sender,
@@ -892,10 +855,6 @@ namespace Nexa
 
             try
             {
-                // =========================
-                // Group Chat
-                // =========================
-
                 GroupInfo group =
                     listHistory.SelectedItem as GroupInfo;
 
@@ -955,10 +914,6 @@ namespace Nexa
                     return;
                 }
 
-                // =========================
-                // Private Chat
-                // =========================
-
                 ChatHistoryItem item =
                     listHistory.SelectedItem
                     as ChatHistoryItem;
@@ -987,7 +942,7 @@ namespace Nexa
                 LoadConversation();
 
                 MarkMessagesAsRead();
-
+                CheckSelectedUserStatus();
                 UpdateLastMessageId();
 
                 UpdateEmptyMessagePanels();
@@ -1120,9 +1075,6 @@ namespace Nexa
                     ex);
             }
         }
-        // =========================================================
-        // SEND TEXT
-        // =========================================================
 
         private void btnSend_Click(
       object sender,
@@ -1140,19 +1092,12 @@ namespace Nexa
                 txtYourMessage.Text))
                 return;
 
-            // =========================
-            // Group Message
-            // =========================
 
             if (selectedGroupId > 0)
             {
                 SendGroupMessage();
                 return;
             }
-
-            // =========================
-            // Private Message
-            // =========================
 
             if (selectedUserId == 0)
             {
@@ -1376,10 +1321,6 @@ namespace Nexa
                     MessageBoxIcon.Error);
             }
         }
-        // =========================================================
-        // LOAD CONVERSATION
-        // =========================================================
-
         private void LoadConversation()
         {
             if (currentUserId == 0 ||
@@ -1654,8 +1595,6 @@ namespace Nexa
                                         : label3.Text +
                                           ": " + message;
                                 }
-
-                                // گرفتن Reaction پیام
                                 LoadReactionForMessage(
                                     chatMessage);
 
@@ -1759,9 +1698,6 @@ namespace Nexa
                 message.ReactionCount = 0;
             }
         }
-        // =========================================================
-        // READ
-        // =========================================================
 
         private void MarkMessagesAsRead()
         {
@@ -1804,10 +1740,6 @@ namespace Nexa
             {
             }
         }
-
-        // =========================================================
-        // LOAD NEW MESSAGES
-        // =========================================================
 
         private void LoadNewMessages()
         {
@@ -2111,10 +2043,6 @@ namespace Nexa
             }
         }
 
-        // =========================================================
-        // READ STATUS
-        // =========================================================
-
         private void RefreshReadStatuses()
         {
             if (currentUserId == 0 ||
@@ -2189,10 +2117,6 @@ namespace Nexa
             }
         }
 
-        // =========================================================
-        // LAST MESSAGE
-        // =========================================================
-
         private void UpdateLastMessageId()
         {
             if (currentUserId == 0 ||
@@ -2249,14 +2173,17 @@ namespace Nexa
             }
         }
 
-        // =========================================================
-        // DELETE HISTORY
-        // =========================================================
-
-        private void btnDeleteHistory_Click(
+        private async  void btnDeleteHistory_Click(
             object sender,
             EventArgs e)
         {
+            if (listHistory.SelectedItem == null)
+                return;
+
+            if (listHistory.SelectedItem is GroupInfo group)
+            {
+                await ConfirmDeleteGroup(group);
+            }
             if (listHistory.SelectedItem == null)
                 return;
 
@@ -2331,10 +2258,6 @@ namespace Nexa
                     ex.Message);
             }
         }
-
-        // =========================================================
-        // STORY
-        // =========================================================
 
         private void btnAddStory_Click(
             object sender,
@@ -2581,10 +2504,6 @@ namespace Nexa
             }
         }
 
-        // =========================================================
-        // VOICE RECORD
-        // =========================================================
-
         private void btnVoice_Click(
             object sender,
             EventArgs e)
@@ -2785,28 +2704,19 @@ namespace Nexa
             }
         }
 
-        // =========================================================
-        // VIDEO MESSAGE
-        // =========================================================
-
         private void btnVoicemessage_Click(
             object sender,
             EventArgs e)
         {
             try
             {
-                // اگر در حال ضبط هستیم، با کلیک دوباره ضبط متوقف شود
                 if (isRecordingVideo)
                 {
                     StopVideoRecording();
                     return;
                 }
-
-                // بررسی انتخاب کاربر
                 if (!CanMessageSelectedUser())
                     return;
-
-                // شروع ضبط
                 StartVideoRecording();
             }
             catch (Exception ex)
@@ -2928,33 +2838,6 @@ namespace Nexa
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
-        }
-
-        private VideoCapabilities GetBestVideoResolution(
-            VideoCapabilities[] capabilities)
-        {
-            if (capabilities == null ||
-                capabilities.Length == 0)
-                return null;
-
-            VideoCapabilities best =
-                capabilities[0];
-
-            foreach (VideoCapabilities item
-                     in capabilities)
-            {
-                if (item.FrameSize.Width >= 640 &&
-                    item.FrameSize.Height >= 480)
-                {
-                    best = item;
-
-                    if (item.FrameSize.Width == 640 &&
-                        item.FrameSize.Height == 480)
-                        break;
-                }
-            }
-
-            return best;
         }
 
         private void VideoSource_NewFrame(object sender, NewFrameEventArgs eventArgs)
@@ -3439,11 +3322,6 @@ namespace Nexa
 
             DeleteVideoFile();
         }
-
-        // =========================================================
-        // MESSAGE DOUBLE CLICK
-        // =========================================================
-
         private void listAnswer_DoubleClick(
       object sender,
       EventArgs e)
@@ -3521,136 +3399,6 @@ namespace Nexa
                     MessageBoxIcon.Error);
             }
         }
-
-        // =========================================================
-        // PLAY VIDEO
-        // =========================================================
-
-        private void PlayVideo(byte[] videoData)
-        {
-            try
-            {
-                string tempVideoFile =
-                    Path.Combine(
-                        Path.GetTempPath(),
-                        "NexaVideoPlay_" +
-                        Guid.NewGuid().ToString() +
-                        ".avi");
-
-                File.WriteAllBytes(
-                    tempVideoFile,
-                    videoData);
-
-                System.Diagnostics.Process.Start(
-                    new System.Diagnostics.ProcessStartInfo
-                    {
-                        FileName = tempVideoFile,
-                        UseShellExecute = true
-                    });
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    "خطا در پخش ویدیو:\n\n" +
-                    ex.Message,
-                    "Nexa",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
-        }
-
-        // =========================================================
-        // SHOW IMAGE
-        // =========================================================
-
-        private void ShowImage(byte[] imageData)
-        {
-            using (MemoryStream ms =
-                   new MemoryStream(imageData))
-            {
-                using (Image tempImage =
-                       Image.FromStream(ms))
-                {
-                    Form imageForm =
-                        new Form();
-
-                    imageForm.Text =
-                        "Nexa - عکس";
-
-                    imageForm.StartPosition =
-                        FormStartPosition.CenterScreen;
-
-                    imageForm.Width = 800;
-                    imageForm.Height = 600;
-
-                    PictureBox pictureBox =
-                        new PictureBox();
-
-                    pictureBox.Dock =
-                        DockStyle.Fill;
-
-                    pictureBox.SizeMode =
-                        PictureBoxSizeMode.Zoom;
-
-                    pictureBox.Image =
-                        new Bitmap(tempImage);
-
-                    imageForm.Controls.Add(
-                        pictureBox);
-
-                    imageForm.ShowDialog();
-
-                    pictureBox.Image.Dispose();
-                    pictureBox.Dispose();
-                    imageForm.Dispose();
-                }
-            }
-        }
-
-        // =========================================================
-        // PLAY VOICE
-        // =========================================================
-
-        private void PlayVoice(byte[] voiceData)
-        {
-            try
-            {
-                StopVoice();
-
-                playingVoiceFile =
-                    Path.Combine(
-                        Path.GetTempPath(),
-                        "NexaVoice_" +
-                        Guid.NewGuid() +
-                        ".wav");
-
-                File.WriteAllBytes(
-                    playingVoiceFile,
-                    voiceData);
-
-                voiceReader =
-                    new WaveFileReader(
-                        playingVoiceFile);
-
-                voicePlayer =
-                    new WaveOutEvent();
-
-                voicePlayer.Init(
-                    voiceReader);
-
-                voicePlayer.PlaybackStopped +=
-                    VoicePlayer_PlaybackStopped;
-
-                voicePlayer.Play();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    "خطا در پخش صدا:\n" +
-                    ex.Message);
-            }
-        }
-
         private void VoicePlayer_PlaybackStopped(
             object sender,
             StoppedEventArgs e)
@@ -3696,11 +3444,6 @@ namespace Nexa
                 playingVoiceFile = null;
             }
         }
-
-        // =========================================================
-        // VIDEO CALL
-        // =========================================================
-
         private async void btnVideoCall_Click(
             object sender,
             EventArgs e)
@@ -3960,11 +3703,6 @@ namespace Nexa
                 return "کاربر ناشناس";
             }
         }
-
-        // =========================================================
-        // SEND FILE
-        // =========================================================
-
         private void btnFile_Click(
             object sender,
             EventArgs e)
@@ -4096,11 +3834,6 @@ namespace Nexa
                 }
             }
         }
-
-        // =========================================================
-        // SEND IMAGE
-        // =========================================================
-
         private void btnSendImage_Click(
             object sender,
             EventArgs e)
@@ -4196,11 +3929,6 @@ namespace Nexa
                 }
             }
         }
-
-        // =========================================================
-        // LOCATION
-        // =========================================================
-
         private void btnLocation_Click(
             object sender,
             EventArgs e)
@@ -4287,11 +4015,6 @@ namespace Nexa
                     ex.Message);
             }
         }
-
-        // =========================================================
-        // EMOJI
-        // =========================================================
-
         private void btnEmoji_Click(
             object sender,
             EventArgs e)
@@ -4348,11 +4071,6 @@ namespace Nexa
                     0,
                     btnEmoji.Height));
         }
-
-        // =========================================================
-        // EMPTY PANELS
-        // =========================================================
-
         private void txtYourMessage_TextChanged(
             object sender,
             EventArgs e)
@@ -4381,11 +4099,7 @@ namespace Nexa
             label5.Visible =
                 !hasMessages;
         }
-        // =========================================================
-        // BAN
-        // =========================================================
-
-        private void banUserToolStripMenuItem_Click(
+        private async void banUserToolStripMenuItem_Click(
             object sender,
             EventArgs e)
         {
@@ -4398,7 +4112,7 @@ namespace Nexa
 
             Show();
 
-            LoadChatHistory();
+            await LoadChatHistory();
 
             UpdateEmptyMessagePanels();
         }
@@ -4408,11 +4122,6 @@ namespace Nexa
             EventArgs e)
         {
         }
-
-        // =========================================================
-        // DRAW
-        // =========================================================
-
         private void listAnswer_DrawItem(object sender, DrawItemEventArgs e)
         {
             if (e.Index < 0)
@@ -4424,10 +4133,6 @@ namespace Nexa
             string senderName = "";
             string dateTimeText = "";
             bool isMyMessage = false;
-
-            // =========================================
-            // Private Chat
-            // =========================================
             ChatMessage privateMessage = item as ChatMessage;
 
             if (privateMessage != null)
@@ -4440,10 +4145,6 @@ namespace Nexa
                     privateMessage.SentAt.ToString(
                         "HH:mm  yyyy/MM/dd");
             }
-
-            // =========================================
-            // Group Chat
-            // =========================================
             GroupMessage groupMessage = item as GroupMessage;
 
             if (groupMessage != null)
@@ -4468,18 +4169,11 @@ namespace Nexa
                     groupMessage.SentAt.ToString(
                         "HH:mm  yyyy/MM/dd");
             }
-
-            // اگر آیتم قابل شناسایی نبود
             if (privateMessage == null &&
                 groupMessage == null)
             {
                 return;
             }
-
-            // =========================================
-            // رنگ پیام
-            // =========================================
-
             Color messageColor =
                 isMyMessage
                 ? Color.FromArgb(232, 245, 233)
@@ -4492,11 +4186,6 @@ namespace Nexa
                     backgroundBrush,
                     e.Bounds);
             }
-
-            // =========================================
-            // متن پیام
-            // =========================================
-
             using (Brush textBrush =
                    new SolidBrush(
                        Color.FromArgb(45, 45, 45)))
@@ -4508,11 +4197,6 @@ namespace Nexa
                     e.Bounds.Left + 8,
                     e.Bounds.Top + 5);
             }
-
-            // =========================================
-            // تاریخ و ساعت
-            // =========================================
-
             using (Font dateFont =
                    new Font(
                        e.Font.FontFamily,
@@ -4536,12 +4220,6 @@ namespace Nexa
                     10,
                     e.Bounds.Top + 7);
             }
-
-            // =========================================
-            // تیک فقط برای پیام خودمان
-            // Private Chat
-            // =========================================
-
             if (privateMessage != null &&
                 isMyMessage)
             {
@@ -4587,11 +4265,6 @@ namespace Nexa
 
             e.DrawFocusRectangle();
         }
-
-        // =========================================================
-        // GROUPBOX
-        // =========================================================
-
         private void groupBox2_Enter(
             object sender,
             EventArgs e)
@@ -4603,11 +4276,6 @@ namespace Nexa
             EventArgs e)
         {
         }
-
-        // =========================================================
-        // SPEECH BUTTON
-        // =========================================================
-
         private void btnSound_Click(
             object sender,
             EventArgs e)
@@ -4661,11 +4329,6 @@ namespace Nexa
                 }
             }
         }
-
-        // =========================================================
-        // CHAT HISTORY ITEM
-        // =========================================================
-
         private class ChatHistoryItem
         {
             public int UserId { get; set; }
@@ -4685,11 +4348,6 @@ namespace Nexa
                 return YourID;
             }
         }
-
-        // =========================================================
-        // CLOSE
-        // =========================================================
-
         protected override void OnFormClosed(
             FormClosedEventArgs e)
         {
@@ -4795,11 +4453,7 @@ namespace Nexa
                         command.ExecuteNonQuery();
                     }
                 }
-
-                // پاک کردن پیام‌ها از لیست
                 listAnswer.Items.Clear();
-
-                // ریست کردن آخرین پیام
                 lastMessageId = 0;
 
                 MessageBox.Show(
@@ -4825,8 +4479,6 @@ namespace Nexa
                        new SqlConnection(connectionString))
                 {
                     connection.Open();
-
-                    // تعداد Reactionهای همین نوع توسط همین کاربر
                     string countQuery = @"
                 SELECT COUNT(*)
                 FROM MessageReactions
@@ -4848,7 +4500,6 @@ namespace Nexa
 
                     if (count > 0)
                     {
-                        // آخرین Reaction را حذف کن
                         string deleteQuery = @"
                     DELETE FROM MessageReactions
                     WHERE Id =
@@ -5422,11 +5073,6 @@ namespace Nexa
                            new SqlConnection(connectionString))
                     {
                         connection.Open();
-
-                        // =========================================
-                        // دریافت نام و YourID مالک گروه
-                        // =========================================
-
                         string creatorQuery = @"
                     SELECT
                         FirstAndLastName,
@@ -5466,11 +5112,6 @@ namespace Nexa
                                 }
                             }
                         }
-
-                        // =========================================
-                        // دریافت اعضای گروه
-                        // =========================================
-
                         string membersQuery = @"
                     SELECT
                         U.Id,
@@ -5541,11 +5182,6 @@ namespace Nexa
                                 }
                             }
                         }
-
-                        // =========================================
-                        // اطلاعات گروه
-                        // =========================================
-
                         string groupName =
                             string.IsNullOrWhiteSpace(group.GroupName)
                             ? "بدون نام"
@@ -5590,11 +5226,6 @@ namespace Nexa
                                     Environment.NewLine,
                                     members);
                         }
-
-                        // =========================================
-                        // نمایش مشخصات
-                        // =========================================
-
                         string info =
                             "مشخصات گروه" +
                             Environment.NewLine +
@@ -5668,11 +5299,6 @@ namespace Nexa
                     return;
                 }
             }
-
-            // =========================================
-            // اگر آیتم کاربر بود
-            // =========================================
-
             string yourIdText =
                 listHistory.Items[index].ToString();
 
@@ -5752,54 +5378,6 @@ namespace Nexa
             this.Hide();
             CreateGroup create = new CreateGroup();
             create.ShowDialog();
-        }
-        private void LoadMyGroups()
-        {
-            using (SqlConnection con = new SqlConnection(connectionString))
-            {
-                string query = @"
-            SELECT
-                G.Id,
-                G.GroupName,
-                G.GroupBio,
-                G.GroupPhoto,
-                G.CreatedBy
-            FROM Groups G
-            INNER JOIN GroupMembers GM
-                ON G.Id = GM.GroupId
-            WHERE GM.UserId = @UserId
-            ORDER BY G.CreatedAt DESC";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                {
-                    cmd.Parameters.Add("@UserId", SqlDbType.Int)
-                        .Value = CurrentUser.Id;
-
-                    con.Open();
-
-                    using (SqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            GroupInfo group = new GroupInfo();
-
-                            group.Id = Convert.ToInt32(reader["Id"]);
-                            group.GroupName = reader["GroupName"].ToString();
-
-                            if (reader["GroupBio"] != DBNull.Value)
-                                group.GroupBio = reader["GroupBio"].ToString();
-
-                            if (reader["GroupPhoto"] != DBNull.Value)
-                                group.GroupPhoto = (byte[])reader["GroupPhoto"];
-
-                            group.CreatedBy = Convert.ToInt32(reader["CreatedBy"]);
-
-                            // فعلاً برای تست
-                            listHistory.Items.Add(group);
-                        }
-                    }
-                }
-            }
         }
 
         private void listHistory_SelectedIndexChanged(object sender, EventArgs e)
@@ -5915,9 +5493,6 @@ namespace Nexa
             if (selectedGroupId <= 0)
                 return;
 
-            // اینجا فعلاً مشخصات گروه را دوباره بارگذاری می‌کنیم
-            // تا تعداد و اعضای جدید نمایش داده شوند.
-
             try
             {
                 using (SqlConnection connection =
@@ -6003,6 +5578,926 @@ namespace Nexa
             {
                 MessageBox.Show(
                     "خطا در بروزرسانی اعضای گروه:\n\n" +
+                    ex.Message,
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
+
+        private void inviteLinkToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (selectedGroupId <= 0)
+            {
+                MessageBox.Show(
+                    "ابتدا یک گروه را انتخاب کنید.",
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                return;
+            }
+
+            try
+            {
+                using (SqlConnection connection =
+                       new SqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    string query = @"
+                SELECT
+                    G.GroupName,
+                    G.InviteCode,
+                    G.CreatedBy
+                FROM Groups G
+                WHERE G.Id = @GroupId;";
+
+                    string groupName = "";
+                    string inviteCode = "";
+                    int createdBy = 0;
+
+                    using (SqlCommand command =
+                           new SqlCommand(query, connection))
+                    {
+                        command.Parameters.Add(
+                            "@GroupId",
+                            SqlDbType.Int).Value =
+                            selectedGroupId;
+
+                        using (SqlDataReader reader =
+                               command.ExecuteReader())
+                        {
+                            if (!reader.Read())
+                            {
+                                MessageBox.Show(
+                                    "گروه پیدا نشد.",
+                                    "Nexa",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Warning);
+
+                                return;
+                            }
+
+                            groupName =
+                                reader["GroupName"] == DBNull.Value
+                                ? ""
+                                : reader["GroupName"].ToString();
+
+                            inviteCode =
+                                reader["InviteCode"] == DBNull.Value
+                                ? ""
+                                : reader["InviteCode"].ToString();
+
+                            createdBy =
+                                reader["CreatedBy"] == DBNull.Value
+                                ? 0
+                                : Convert.ToInt32(
+                                    reader["CreatedBy"]);
+                        }
+                    }
+
+                    if (createdBy != currentUserId)
+                    {
+                        MessageBox.Show(
+                            "فقط مالک گروه می‌تواند لینک دعوت ایجاد کند.",
+                            "Nexa",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning);
+
+                        return;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(inviteCode))
+                    {
+                        inviteCode =
+                            Guid.NewGuid()
+                            .ToString("N")
+                            .Substring(0, 12)
+                            .ToUpper();
+
+                        string updateQuery = @"
+                    UPDATE Groups
+                    SET InviteCode = @InviteCode
+                    WHERE Id = @GroupId;";
+
+                        using (SqlCommand updateCommand =
+                               new SqlCommand(
+                                   updateQuery,
+                                   connection))
+                        {
+                            updateCommand.Parameters.Add(
+                                "@InviteCode",
+                                SqlDbType.NVarChar,
+                                100).Value =
+                                inviteCode;
+
+                            updateCommand.Parameters.Add(
+                                "@GroupId",
+                                SqlDbType.Int).Value =
+                                selectedGroupId;
+
+                            updateCommand.ExecuteNonQuery();
+                        }
+                    }
+
+                    string inviteLink =
+                        "https://nexa.app/group/" +
+                        inviteCode;
+
+                    Clipboard.SetText(inviteLink);
+
+                    MessageBox.Show(
+                        "گروه: " +
+                        groupName +
+                        "\n\n" +
+                        "Invite Link:\n" +
+                        inviteLink +
+                        "\n\n" +
+                        "لینک کپی شد.",
+                        "Group Invite Link",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show(
+                    "خطای SQL:\n\n" +
+                    ex.Message +
+                    "\n\nشماره خطا: " +
+                    ex.Number,
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "خطا در ایجاد لینک دعوت:\n\n" +
+                    ex.Message,
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
+
+        private async void joinGroupToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string link = "";
+
+            using (Form inputForm = new Form())
+            {
+                inputForm.Text = "Join Group";
+                inputForm.Width = 450;
+                inputForm.Height = 180;
+                inputForm.StartPosition = FormStartPosition.CenterParent;
+
+                Label label = new Label();
+                label.Text = "لینک دعوت گروه را وارد کنید:";
+                label.Left = 20;
+                label.Top = 20;
+                label.Width = 380;
+
+                TextBox textBox = new TextBox();
+                textBox.Left = 20;
+                textBox.Top = 50;
+                textBox.Width = 380;
+
+                Button btnOk = new Button();
+                btnOk.Text = "OK";
+                btnOk.Left = 220;
+                btnOk.Top = 90;
+                btnOk.Width = 80;
+                btnOk.DialogResult = DialogResult.OK;
+
+                Button btnCancel = new Button();
+                btnCancel.Text = "Cancel";
+                btnCancel.Left = 310;
+                btnCancel.Top = 90;
+                btnCancel.Width = 90;
+                btnCancel.DialogResult = DialogResult.Cancel;
+
+                inputForm.Controls.Add(label);
+                inputForm.Controls.Add(textBox);
+                inputForm.Controls.Add(btnOk);
+                inputForm.Controls.Add(btnCancel);
+
+                inputForm.AcceptButton = btnOk;
+                inputForm.CancelButton = btnCancel;
+
+                if (inputForm.ShowDialog(this) != DialogResult.OK)
+                    return;
+
+                link = textBox.Text.Trim();
+            }
+
+            if (string.IsNullOrWhiteSpace(link))
+                return;
+
+            int lastSlash =
+                link.LastIndexOf("/");
+
+            if (lastSlash < 0 ||
+                lastSlash >= link.Length - 1)
+            {
+                MessageBox.Show(
+                    "لینک دعوت نامعتبر است.",
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                return;
+            }
+
+            string inviteCode =
+                link.Substring(lastSlash + 1).Trim();
+
+            if (string.IsNullOrWhiteSpace(inviteCode))
+            {
+                MessageBox.Show(
+                    "کد دعوت نامعتبر است.",
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                return;
+            }
+
+            if (currentUserId <= 0)
+            {
+                MessageBox.Show(
+                    "کاربر فعلی شناسایی نشده است.",
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                return;
+            }
+
+            try
+            {
+                using (JoinGroup form =
+                       new JoinGroup(
+                           inviteCode,
+                           currentUserId))
+                {
+                    DialogResult result =
+                        form.ShowDialog(this);
+
+                    if (result == DialogResult.OK)
+                    {
+                        await LoadChatHistory();
+
+                        listHistory.Refresh();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "خطا در ورود به گروه:\n\n" +
+                    ex.Message,
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
+        private void UpdateMyLastSeen()
+        {
+            if (currentUserId <= 0)
+                return;
+
+            try
+            {
+                using (SqlConnection connection =
+                       new SqlConnection(connectionString))
+                {
+                    string query = @"
+                UPDATE Users
+                SET LastSeen = GETDATE()
+                WHERE Id = @UserId;";
+
+                    using (SqlCommand command =
+                           new SqlCommand(query, connection))
+                    {
+                        command.Parameters.Add(
+                            "@UserId",
+                            SqlDbType.Int).Value =
+                            currentUserId;
+
+                        connection.Open();
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch
+            {
+            }
+        }
+        private void CheckSelectedUserStatus()
+        {
+            if (selectedUserId <= 0)
+            {
+                label6.Text = "";
+                return;
+            }
+
+            try
+            {
+                using (SqlConnection connection =
+                       new SqlConnection(connectionString))
+                {
+                    string query = @"
+                SELECT LastSeen
+                FROM Users
+                WHERE Id = @UserId;";
+
+                    using (SqlCommand command =
+                           new SqlCommand(query, connection))
+                    {
+                        command.Parameters.Add(
+                            "@UserId",
+                            SqlDbType.Int).Value =
+                            selectedUserId;
+
+                        connection.Open();
+
+                        object result =
+                            command.ExecuteScalar();
+
+                        if (result == null ||
+                            result == DBNull.Value)
+                        {
+                            label6.Text = "Offline";
+                            return;
+                        }
+
+                        DateTime lastSeen =
+                            Convert.ToDateTime(result);
+
+                        TimeSpan difference =
+                            DateTime.Now - lastSeen;
+
+                        if (difference.TotalSeconds <= 10)
+                        {
+                            label6.Text = "Online";
+                        }
+                        else
+                        {
+                            label6.Text = "Offline";
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                label6.Text = "Offline";
+            }
+        }
+        private async Task TestApiConnection()
+        {
+            try
+            {
+                HttpResponseMessage response =
+                    await apiClient.GetAsync("api/users/1");
+
+                string result =
+                    await response.Content.ReadAsStringAsync();
+
+                MessageBox.Show(
+                    "Status: " +
+                    response.StatusCode +
+                    "\n\n" +
+                    result,
+                    "Nexa API",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "خطا در اتصال به API:\n\n" +
+                    ex.Message,
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
+        private async Task<UserResponse> GetUserFromApi(int userId)
+        {
+            try
+            {
+                HttpResponseMessage response =
+                    await apiClient.GetAsync(
+                        "api/users/" + userId);
+
+                string result =
+                    await response.Content.ReadAsStringAsync();
+
+                MessageBox.Show(
+                    "StatusCode: " +
+                    response.StatusCode +
+                    "\n\nResponse:\n" +
+                    result,
+                    "API Debug",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+
+                if (!response.IsSuccessStatusCode)
+                    return null;
+
+                UserResponse user =
+                    await response.Content
+                        .ReadFromJsonAsync<UserResponse>();
+
+                return user;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "API Error:\n\n" +
+                    ex.ToString(),
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
+                return null;
+            }
+        }
+        private async Task TestGetUserFromApi()
+        {
+            if (currentUserId <= 0)
+                return;
+
+            UserResponse user =
+                await GetUserFromApi(currentUserId);
+
+            if (user == null)
+            {
+                MessageBox.Show(
+                    "کاربر از API دریافت نشد.",
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                return;
+            }
+
+            MessageBox.Show(
+                "Id: " +
+                user.Id +
+                "\nName: " +
+                user.FirstAndLastName +
+                "\nYourID: " +
+                user.YourID,
+                "API Test",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+        }
+        private async Task<List<ApiChatItem>> GetChatHistoryFromApi(int userId)
+        {
+            try
+            {
+                HttpResponseMessage response =
+                    await apiClient.GetAsync(
+                        "api/chat/history/" + userId);
+
+                string json =
+                    await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    MessageBox.Show(
+                        "خطا از API:\n\n" +
+                        json,
+                        "Nexa API",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+
+                    return new List<ApiChatItem>();
+                }
+
+                List<ApiChatItem> items =
+                    System.Text.Json.JsonSerializer.Deserialize<List<ApiChatItem>>(
+                        json);
+
+                if (items == null)
+                    return new List<ApiChatItem>();
+
+                return items;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "خطا در دریافت تاریخچه از API:\n\n" +
+                    ex.Message,
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
+                return new List<ApiChatItem>();
+            }
+        }
+        private async Task LoadChatHistoryFromDatabase()
+        {
+            listHistory.Items.Clear();
+
+            if (currentUserId <= 0)
+                return;
+
+            try
+            {
+                using (SqlConnection con =
+                       new SqlConnection(connectionString))
+                {
+                    await con.OpenAsync();
+
+                    // =====================================================
+                    // 1. کاربران
+                    // =====================================================
+
+                    string userQuery = @"
+                SELECT DISTINCT
+                    U.Id,
+                    U.YourID,
+                    U.FirstAndLastName
+                FROM ChatHistory CH
+                INNER JOIN Users U
+                    ON
+                    (
+                        CH.UserId = @UserId
+                        AND U.Id = CH.OtherUserId
+                    )
+                    OR
+                    (
+                        CH.OtherUserId = @UserId
+                        AND U.Id = CH.UserId
+                    )
+                WHERE
+                    CH.UserId = @UserId
+                    OR
+                    CH.OtherUserId = @UserId
+                ORDER BY U.FirstAndLastName";
+
+                    using (SqlCommand cmd =
+                           new SqlCommand(userQuery, con))
+                    {
+                        cmd.Parameters.Add(
+                            "@UserId",
+                            SqlDbType.Int).Value =
+                            currentUserId;
+
+                        using (SqlDataReader reader =
+                               await cmd.ExecuteReaderAsync())
+                        {
+                            HashSet<int> addedUsers =
+                                new HashSet<int>();
+
+                            while (await reader.ReadAsync())
+                            {
+                                int userId =
+                                    Convert.ToInt32(reader["Id"]);
+
+                                if (addedUsers.Contains(userId))
+                                    continue;
+
+                                addedUsers.Add(userId);
+
+                                ChatHistoryItem item =
+                                    new ChatHistoryItem();
+
+                                item.UserId =
+                                    userId;
+
+                                item.YourID =
+                                    reader["YourID"]?.ToString()
+                                    ?? "";
+
+                                item.FirstAndLastName =
+                                    reader["FirstAndLastName"]?.ToString()
+                                    ?? "";
+
+                                item.IsBlocked =
+                                    IsUserBlocked(userId);
+
+                                listHistory.Items.Add(item);
+                            }
+                        }
+                    }
+
+                    // =====================================================
+                    // 2. گروه‌ها
+                    // =====================================================
+
+                    string groupQuery = @"
+                SELECT
+                    G.Id,
+                    G.GroupName,
+                    G.GroupBio,
+                    G.GroupPhoto,
+                    G.CreatedBy,
+                    G.InviteCode
+                FROM GroupMembers GM
+                INNER JOIN Groups G
+                    ON G.Id = GM.GroupId
+                WHERE GM.UserId = @UserId
+                ORDER BY G.GroupName";
+
+                    using (SqlCommand cmd =
+                           new SqlCommand(groupQuery, con))
+                    {
+                        cmd.Parameters.Add(
+                            "@UserId",
+                            SqlDbType.Int).Value =
+                            currentUserId;
+
+                        using (SqlDataReader reader =
+                               await cmd.ExecuteReaderAsync())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                GroupInfo group =
+                                    new GroupInfo();
+
+                                group.Id =
+                                    Convert.ToInt32(
+                                        reader["Id"]);
+
+                                group.GroupName =
+                                    reader["GroupName"]?.ToString()
+                                    ?? "";
+
+                                group.GroupBio =
+                                    reader["GroupBio"]?.ToString()
+                                    ?? "";
+
+                                group.CreatedBy =
+                                    Convert.ToInt32(
+                                        reader["CreatedBy"]);
+
+                                group.InviteCode =
+                                    reader["InviteCode"]?.ToString()
+                                    ?? "";
+
+                                // ============================
+                                // عکس گروه
+                                // ============================
+
+                                if (reader["GroupPhoto"] != DBNull.Value)
+                                {
+                                    try
+                                    {
+                                        if (reader["GroupPhoto"]
+                                            is byte[])
+                                        {
+                                            group.GroupPhoto =
+                                                (byte[])reader["GroupPhoto"];
+                                        }
+                                        else
+                                        {
+                                            string photo =
+                                                reader["GroupPhoto"]
+                                                .ToString();
+
+                                            if (!string.IsNullOrWhiteSpace(photo))
+                                            {
+                                                group.GroupPhoto =
+                                                    Convert.FromBase64String(
+                                                        photo);
+                                            }
+                                        }
+                                    }
+                                    catch
+                                    {
+                                        group.GroupPhoto = null;
+                                    }
+                                }
+                                else
+                                {
+                                    group.GroupPhoto = null;
+                                }
+
+                                listHistory.Items.Add(group);
+                            }
+                        }
+                    }
+                }
+
+                listHistory.Refresh();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "خطا در بارگذاری تاریخچه کاربران و گروه‌ها:\n\n" +
+                    ex.Message,
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
+        private async Task ConfirmDeleteGroup(GroupInfo group)
+{
+    if (group == null)
+        return;
+
+    if (group.CreatedBy != currentUserId)
+    {
+        MessageBox.Show(
+            "فقط مالک گروه می‌تواند گروه را حذف کند.",
+            "Nexa",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Warning);
+
+        return;
+    }
+
+    DialogResult result =
+        MessageBox.Show(
+            "آیا مطمئن هستید که می‌خواهید گروه \"" +
+            group.GroupName +
+            "\" را حذف کنید؟\n\n" +
+            "تمام اعضا و پیام‌های این گروه نیز حذف خواهند شد.",
+            "حذف گروه",
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Warning);
+
+    if (result != DialogResult.Yes)
+        return;
+
+    await DeleteGroup(group.Id);
+}
+        private async Task DeleteGroup(int groupId)
+        {
+            if (groupId <= 0)
+                return;
+
+            if (currentUserId <= 0)
+                return;
+
+            try
+            {
+                using (SqlConnection con =
+                       new SqlConnection(connectionString))
+                {
+                    await con.OpenAsync();
+
+                    using (SqlTransaction transaction =
+                           con.BeginTransaction())
+                    {
+                        try
+                        {
+                            string ownerQuery = @"
+                        SELECT CreatedBy
+                        FROM Groups
+                        WHERE Id = @GroupId";
+
+                            int createdBy = 0;
+
+                            using (SqlCommand cmd =
+                                   new SqlCommand(
+                                       ownerQuery,
+                                       con,
+                                       transaction))
+                            {
+                                cmd.Parameters.Add(
+                                    "@GroupId",
+                                    SqlDbType.Int).Value =
+                                    groupId;
+
+                                object result =
+                                    await cmd.ExecuteScalarAsync();
+
+                                if (result == null ||
+                                    result == DBNull.Value)
+                                {
+                                    transaction.Rollback();
+
+                                    MessageBox.Show(
+                                        "گروه پیدا نشد.",
+                                        "Nexa",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Warning);
+
+                                    return;
+                                }
+
+                                createdBy =
+                                    Convert.ToInt32(result);
+                            }
+
+                            if (createdBy != currentUserId)
+                            {
+                                transaction.Rollback();
+
+                                MessageBox.Show(
+                                    "فقط مالک گروه می‌تواند گروه را حذف کند.",
+                                    "Nexa",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Warning);
+
+                                return;
+                            }
+
+                            string deleteMessages = @"
+                        DELETE FROM GroupMessages
+                        WHERE GroupId = @GroupId";
+
+                            using (SqlCommand cmd =
+                                   new SqlCommand(
+                                       deleteMessages,
+                                       con,
+                                       transaction))
+                            {
+                                cmd.Parameters.Add(
+                                    "@GroupId",
+                                    SqlDbType.Int).Value =
+                                    groupId;
+
+                                await cmd.ExecuteNonQueryAsync();
+                            }
+
+                            string deleteMembers = @"
+                        DELETE FROM GroupMembers
+                        WHERE GroupId = @GroupId";
+
+                            using (SqlCommand cmd =
+                                   new SqlCommand(
+                                       deleteMembers,
+                                       con,
+                                       transaction))
+                            {
+                                cmd.Parameters.Add(
+                                    "@GroupId",
+                                    SqlDbType.Int).Value =
+                                    groupId;
+
+                                await cmd.ExecuteNonQueryAsync();
+                            }
+
+                            string deleteGroup = @"
+                        DELETE FROM Groups
+                        WHERE Id = @GroupId
+                        AND CreatedBy = @UserId";
+
+                            using (SqlCommand cmd =
+                                   new SqlCommand(
+                                       deleteGroup,
+                                       con,
+                                       transaction))
+                            {
+                                cmd.Parameters.Add(
+                                    "@GroupId",
+                                    SqlDbType.Int).Value =
+                                    groupId;
+
+                                cmd.Parameters.Add(
+                                    "@UserId",
+                                    SqlDbType.Int).Value =
+                                    currentUserId;
+
+                                int affected =
+                                    await cmd.ExecuteNonQueryAsync();
+
+                                if (affected == 0)
+                                {
+                                    throw new Exception(
+                                        "گروه حذف نشد.");
+                                }
+                            }
+
+                            transaction.Commit();
+
+                            await LoadChatHistoryFromDatabase();
+
+                            listHistory.Refresh();
+
+                            MessageBox.Show(
+                                "گروه با موفقیت حذف شد.",
+                                "Nexa",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information);
+                        }
+                        catch
+                        {
+                            try
+                            {
+                                transaction.Rollback();
+                            }
+                            catch
+                            {
+                            }
+
+                            throw;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "خطا در حذف گروه:\n\n" +
                     ex.Message,
                     "Nexa",
                     MessageBoxButtons.OK,

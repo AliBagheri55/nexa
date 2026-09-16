@@ -10,9 +10,10 @@ namespace Nexa
     public partial class CreateGroup : Form
     {
         string connectionString =
-    @"Server=.;Database=Nexa;Trusted_Connection=True;TrustServerCertificate=True;";
+            @"Server=.;Database=Nexa;Trusted_Connection=True;TrustServerCertificate=True;";
 
         byte[] groupPhoto = null;
+
         public CreateGroup()
         {
             InitializeComponent();
@@ -20,7 +21,6 @@ namespace Nexa
 
         private void CreateGroup_Load(object sender, EventArgs e)
         {
-
         }
 
         private void btnSelectPhoto_Click(object sender, EventArgs e)
@@ -32,49 +32,70 @@ namespace Nexa
 
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    groupPhoto = File.ReadAllBytes(dialog.FileName);
+                    groupPhoto =
+                        File.ReadAllBytes(dialog.FileName);
 
-                    using (MemoryStream ms = new MemoryStream(groupPhoto))
+                    using (MemoryStream ms =
+                           new MemoryStream(groupPhoto))
                     {
-                        picGroupPhoto.Image = Image.FromStream(ms);
+                        picGroupPhoto.Image =
+                            Image.FromStream(ms);
                     }
                 }
             }
         }
+
+        private string GenerateInviteCode()
+        {
+            return Guid.NewGuid()
+                .ToString("N")
+                .Substring(0, 12)
+                .ToUpper();
+        }
+
         private void AddCreatorToGroup(int groupId)
         {
-            using (SqlConnection con = new SqlConnection(connectionString))
+            using (SqlConnection con =
+                   new SqlConnection(connectionString))
             {
                 string query = @"
-            INSERT INTO GroupMembers
-            (
-                GroupId,
-                UserId,
-                Role
-            )
-            VALUES
-            (
-                @GroupId,
-                @UserId,
-                'Admin'
-            )";
+                    INSERT INTO GroupMembers
+                    (
+                        GroupId,
+                        UserId,
+                        Role
+                    )
+                    VALUES
+                    (
+                        @GroupId,
+                        @UserId,
+                        'Admin'
+                    )";
 
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlCommand cmd =
+                       new SqlCommand(query, con))
                 {
-                    cmd.Parameters.Add("@GroupId", SqlDbType.Int)
-                        .Value = groupId;
+                    cmd.Parameters.Add(
+                        "@GroupId",
+                        SqlDbType.Int).Value =
+                        groupId;
 
-                    cmd.Parameters.Add("@UserId", SqlDbType.Int)
-                        .Value = CurrentUser.Id;
+                    cmd.Parameters.Add(
+                        "@UserId",
+                        SqlDbType.Int).Value =
+                        CurrentUser.Id;
 
                     con.Open();
+
                     cmd.ExecuteNonQuery();
                 }
             }
         }
+
         private void btnCreateGroup_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtGroupName.Text))
+            if (string.IsNullOrWhiteSpace(
+                txtGroupName.Text))
             {
                 MessageBox.Show(
                     "نام گروه را وارد کنید.",
@@ -96,67 +117,144 @@ namespace Nexa
                 return;
             }
 
-            using (SqlConnection con = new SqlConnection(connectionString))
+            try
             {
-                string query = @"
-                INSERT INTO Groups
-                (
-                  GroupName,
-                  GroupBio,
-                  GroupPhoto,
-                  CreatedBy
-                )
-                OUTPUT INSERTED.Id
-                VALUES
-                (
-                   @GroupName,
-                   @GroupBio,
-                   @GroupPhoto,
-                   @CreatedBy
-                )";
+                string inviteCode =
+                    GenerateInviteCode();
 
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlConnection con =
+                       new SqlConnection(
+                           connectionString))
                 {
-                    cmd.Parameters.Add("@GroupName", SqlDbType.NVarChar, 100)
-                        .Value = txtGroupName.Text.Trim();
+                    string query = @"
+                        INSERT INTO Groups
+                        (
+                            GroupName,
+                            GroupBio,
+                            GroupPhoto,
+                            CreatedBy,
+                            InviteCode
+                        )
+                        OUTPUT INSERTED.Id
+                        VALUES
+                        (
+                            @GroupName,
+                            @GroupBio,
+                            @GroupPhoto,
+                            @CreatedBy,
+                            @InviteCode
+                        )";
 
-                    cmd.Parameters.Add("@GroupBio", SqlDbType.NVarChar, 500)
-                        .Value = string.IsNullOrWhiteSpace(txtGroupBio.Text)
+                    using (SqlCommand cmd =
+                           new SqlCommand(
+                               query,
+                               con))
+                    {
+                        cmd.Parameters.Add(
+                            "@GroupName",
+                            SqlDbType.NVarChar,
+                            100).Value =
+                            txtGroupName.Text.Trim();
+
+                        cmd.Parameters.Add(
+                            "@GroupBio",
+                            SqlDbType.NVarChar,
+                            500).Value =
+                            string.IsNullOrWhiteSpace(
+                                txtGroupBio.Text)
                             ? (object)DBNull.Value
                             : txtGroupBio.Text.Trim();
 
-                    cmd.Parameters.Add("@GroupPhoto", SqlDbType.VarBinary, -1)
-                        .Value = groupPhoto == null
+                        cmd.Parameters.Add(
+                            "@GroupPhoto",
+                            SqlDbType.VarBinary,
+                            -1).Value =
+                            groupPhoto == null
                             ? (object)DBNull.Value
                             : groupPhoto;
 
-                    cmd.Parameters.Add("@CreatedBy", SqlDbType.Int)
-                        .Value = CurrentUser.Id;
+                        cmd.Parameters.Add(
+                            "@CreatedBy",
+                            SqlDbType.Int).Value =
+                            CurrentUser.Id;
 
-                    con.Open();
+                        cmd.Parameters.Add(
+                            "@InviteCode",
+                            SqlDbType.NVarChar,
+                            100).Value =
+                            inviteCode;
 
-                    int groupId = Convert.ToInt32(cmd.ExecuteScalar());
+                        con.Open();
 
-                    // اضافه کردن سازنده به عنوان Admin
-                    AddCreatorToGroup(groupId);
+                        int groupId =
+                            Convert.ToInt32(
+                                cmd.ExecuteScalar());
 
-                    // باز کردن فرم افزودن اعضا
-                    this.Hide();
+                        // اضافه کردن سازنده به گروه
+                        AddCreatorToGroup(groupId);
 
-                    AddGroupMembers membersForm = new AddGroupMembers(groupId);
+                        // ساخت لینک دعوت
+                        string inviteLink =
+                            "https://nexa.app/group/" +
+                            inviteCode;
 
-                    membersForm.ShowDialog();
+                        // نمایش لینک دعوت
+                        MessageBox.Show(
+                            "گروه با موفقیت ساخته شد.\n\n" +
+                            "لینک دعوت گروه:\n\n" +
+                            inviteLink +
+                            "\n\n" +
+                            "لینک در کلیپ‌بورد کپی شد.",
+                            "Nexa",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
 
-                    this.Close();
+                        Clipboard.SetText(inviteLink);
+
+                        // باز کردن فرم افزودن اعضا
+                        this.Hide();
+
+                        AddGroupMembers membersForm =
+                            new AddGroupMembers(groupId);
+
+                        membersForm.ShowDialog();
+
+                        this.Close();
+                    }
                 }
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show(
+                    "خطای SQL هنگام ساخت گروه:\n\n" +
+                    ex.Message +
+                    "\n\nشماره خطا: " +
+                    ex.Number,
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "خطا هنگام ساخت گروه:\n\n" +
+                    ex.Message,
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
         }
 
         private void btnBack_Click(object sender, EventArgs e)
         {
             this.Hide();
-            Nexa nexa= new Nexa();
+
+            Nexa nexa =
+                new Nexa();
+
             nexa.ShowDialog();
+
+            this.Close();
         }
     }
 }
