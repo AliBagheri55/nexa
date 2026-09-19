@@ -243,6 +243,26 @@ namespace Nexa.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap pencil_striped_symbol_for_interface_edit_buttons_icon_icons_com_56782 {
+            get {
+                object obj = ResourceManager.GetObject("pencil-striped-symbol-for-interface-edit-buttons_icon-icons.com_56782", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap pencil_striped_symbol_for_interface_edit_buttons_icon_icons1 {
+            get {
+                object obj = ResourceManager.GetObject("pencil-striped-symbol-for-interface-edit-buttons_icon-icons1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap phone_4307 {
             get {
                 object obj = ResourceManager.GetObject("phone_4307", resourceCulture);
@@ -256,6 +276,16 @@ namespace Nexa.Properties {
         internal static System.Drawing.Bitmap photocameraoutline_80020 {
             get {
                 object obj = ResourceManager.GetObject("photocameraoutline_80020", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap replay_icon_icons_com_64443 {
+            get {
+                object obj = ResourceManager.GetObject("replay_icon-icons.com_64443", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

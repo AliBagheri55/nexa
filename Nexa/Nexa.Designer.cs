@@ -42,23 +42,11 @@
             this.flowStories = new System.Windows.Forms.FlowLayoutPanel();
             this.btnAddStory = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.btnDelete = new System.Windows.Forms.Button();
-            this.btnGIF = new System.Windows.Forms.Button();
-            this.btnPinmessages = new System.Windows.Forms.Button();
-            this.btnVoicemessage = new System.Windows.Forms.Button();
+            this.label6 = new System.Windows.Forms.Label();
             this.btnSound = new System.Windows.Forms.Button();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.btnEmoji = new System.Windows.Forms.Button();
-            this.btnLocation = new System.Windows.Forms.Button();
-            this.btnSendImage = new System.Windows.Forms.Button();
-            this.btnFile = new System.Windows.Forms.Button();
-            this.btnVideoCall = new System.Windows.Forms.Button();
-            this.btnVoice = new System.Windows.Forms.Button();
             this.txtYourMessage = new System.Windows.Forms.TextBox();
-            this.btnSend = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -74,15 +62,29 @@
             this.inviteLinkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.joinGroupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.label6 = new System.Windows.Forms.Label();
+            this.btnEditMessage = new System.Windows.Forms.Button();
+            this.btnDelete = new System.Windows.Forms.Button();
+            this.btnGIF = new System.Windows.Forms.Button();
+            this.btnPinmessages = new System.Windows.Forms.Button();
+            this.btnVoicemessage = new System.Windows.Forms.Button();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.btnEmoji = new System.Windows.Forms.Button();
+            this.btnLocation = new System.Windows.Forms.Button();
+            this.btnSendImage = new System.Windows.Forms.Button();
+            this.btnFile = new System.Windows.Forms.Button();
+            this.btnVideoCall = new System.Windows.Forms.Button();
+            this.btnVoice = new System.Windows.Forms.Button();
+            this.btnSend = new System.Windows.Forms.Button();
+            this.btnReplay = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -205,6 +207,8 @@
             // groupBox3
             // 
             this.groupBox3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.groupBox3.Controls.Add(this.btnReplay);
+            this.groupBox3.Controls.Add(this.btnEditMessage);
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.btnDelete);
             this.groupBox3.Controls.Add(this.btnGIF);
@@ -235,45 +239,13 @@
             this.groupBox3.Text = "Messages";
             this.groupBox3.Enter += new System.EventHandler(this.groupBox3_Enter);
             // 
-            // btnDelete
+            // label6
             // 
-            this.btnDelete.Image = global::Nexa.Properties.Resources.waste_bin_delete_remove_recycle_icon_123840;
-            this.btnDelete.Location = new System.Drawing.Point(304, 555);
-            this.btnDelete.Name = "btnDelete";
-            this.btnDelete.Size = new System.Drawing.Size(60, 52);
-            this.btnDelete.TabIndex = 20;
-            this.btnDelete.UseVisualStyleBackColor = true;
-            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
-            // 
-            // btnGIF
-            // 
-            this.btnGIF.Image = global::Nexa.Properties.Resources.gif_images_file_type_interface_symbol_of_stroke_icon_icons_com_57567;
-            this.btnGIF.Location = new System.Drawing.Point(40, 555);
-            this.btnGIF.Name = "btnGIF";
-            this.btnGIF.Size = new System.Drawing.Size(60, 52);
-            this.btnGIF.TabIndex = 19;
-            this.btnGIF.UseVisualStyleBackColor = true;
-            this.btnGIF.Click += new System.EventHandler(this.btnGIF_Click);
-            // 
-            // btnPinmessages
-            // 
-            this.btnPinmessages.Image = global::Nexa.Properties.Resources.location_pin_place_map_address_placeholder_marker_icon_149108;
-            this.btnPinmessages.Location = new System.Drawing.Point(304, 496);
-            this.btnPinmessages.Name = "btnPinmessages";
-            this.btnPinmessages.Size = new System.Drawing.Size(60, 52);
-            this.btnPinmessages.TabIndex = 18;
-            this.btnPinmessages.UseVisualStyleBackColor = true;
-            this.btnPinmessages.Click += new System.EventHandler(this.btnPinmessages_Click);
-            // 
-            // btnVoicemessage
-            // 
-            this.btnVoicemessage.Image = global::Nexa.Properties.Resources.camera_icon_icons_com_72364__1_;
-            this.btnVoicemessage.Location = new System.Drawing.Point(40, 496);
-            this.btnVoicemessage.Name = "btnVoicemessage";
-            this.btnVoicemessage.Size = new System.Drawing.Size(60, 52);
-            this.btnVoicemessage.TabIndex = 17;
-            this.btnVoicemessage.UseVisualStyleBackColor = true;
-            this.btnVoicemessage.Click += new System.EventHandler(this.btnVoicemessage_Click);
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(795, 21);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(0, 16);
+            this.label6.TabIndex = 21;
             // 
             // btnSound
             // 
@@ -284,16 +256,6 @@
             this.btnSound.Text = "صدا";
             this.btnSound.UseVisualStyleBackColor = true;
             this.btnSound.Click += new System.EventHandler(this.btnSound_Click);
-            // 
-            // pictureBox2
-            // 
-            this.pictureBox2.Image = global::Nexa.Properties.Resources.Nexa;
-            this.pictureBox2.Location = new System.Drawing.Point(549, 205);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(193, 163);
-            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox2.TabIndex = 15;
-            this.pictureBox2.TabStop = false;
             // 
             // label5
             // 
@@ -313,76 +275,6 @@
             this.label4.TabIndex = 13;
             this.label4.Text = "No messages yet";
             // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = global::Nexa.Properties.Resources.Nexa;
-            this.pictureBox1.Location = new System.Drawing.Point(119, 121);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(193, 163);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 12;
-            this.pictureBox1.TabStop = false;
-            // 
-            // btnEmoji
-            // 
-            this.btnEmoji.Image = global::Nexa.Properties.Resources.emoji_smile_icon_160172;
-            this.btnEmoji.Location = new System.Drawing.Point(106, 554);
-            this.btnEmoji.Name = "btnEmoji";
-            this.btnEmoji.Size = new System.Drawing.Size(60, 52);
-            this.btnEmoji.TabIndex = 11;
-            this.btnEmoji.UseVisualStyleBackColor = true;
-            this.btnEmoji.Click += new System.EventHandler(this.btnEmoji_Click);
-            // 
-            // btnLocation
-            // 
-            this.btnLocation.Image = global::Nexa.Properties.Resources.shop_place_marker_address_location_pin_map_ecommerce_icon_224950;
-            this.btnLocation.Location = new System.Drawing.Point(172, 554);
-            this.btnLocation.Name = "btnLocation";
-            this.btnLocation.Size = new System.Drawing.Size(60, 52);
-            this.btnLocation.TabIndex = 10;
-            this.btnLocation.UseVisualStyleBackColor = true;
-            this.btnLocation.Click += new System.EventHandler(this.btnLocation_Click);
-            // 
-            // btnSendImage
-            // 
-            this.btnSendImage.Image = global::Nexa.Properties.Resources.image_111003;
-            this.btnSendImage.Location = new System.Drawing.Point(238, 554);
-            this.btnSendImage.Name = "btnSendImage";
-            this.btnSendImage.Size = new System.Drawing.Size(60, 52);
-            this.btnSendImage.TabIndex = 9;
-            this.btnSendImage.UseVisualStyleBackColor = true;
-            this.btnSendImage.Click += new System.EventHandler(this.btnSendImage_Click);
-            // 
-            // btnFile
-            // 
-            this.btnFile.Image = global::Nexa.Properties.Resources.fileinterfacesymboloftextpapersheet_79740__1_;
-            this.btnFile.Location = new System.Drawing.Point(106, 496);
-            this.btnFile.Name = "btnFile";
-            this.btnFile.Size = new System.Drawing.Size(60, 52);
-            this.btnFile.TabIndex = 3;
-            this.btnFile.UseVisualStyleBackColor = true;
-            this.btnFile.Click += new System.EventHandler(this.btnFile_Click);
-            // 
-            // btnVideoCall
-            // 
-            this.btnVideoCall.Image = global::Nexa.Properties.Resources.iconfinder_contat_us_1call_4211833_115049;
-            this.btnVideoCall.Location = new System.Drawing.Point(172, 496);
-            this.btnVideoCall.Name = "btnVideoCall";
-            this.btnVideoCall.Size = new System.Drawing.Size(60, 52);
-            this.btnVideoCall.TabIndex = 8;
-            this.btnVideoCall.UseVisualStyleBackColor = true;
-            this.btnVideoCall.Click += new System.EventHandler(this.btnVideoCall_Click);
-            // 
-            // btnVoice
-            // 
-            this.btnVoice.Image = global::Nexa.Properties.Resources.wondicon_ui_free_speaker_111240;
-            this.btnVoice.Location = new System.Drawing.Point(238, 496);
-            this.btnVoice.Name = "btnVoice";
-            this.btnVoice.Size = new System.Drawing.Size(60, 52);
-            this.btnVoice.TabIndex = 7;
-            this.btnVoice.UseVisualStyleBackColor = true;
-            this.btnVoice.Click += new System.EventHandler(this.btnVoice_Click);
-            // 
             // txtYourMessage
             // 
             this.txtYourMessage.Location = new System.Drawing.Point(13, 41);
@@ -391,18 +283,6 @@
             this.txtYourMessage.Size = new System.Drawing.Size(388, 401);
             this.txtYourMessage.TabIndex = 6;
             this.txtYourMessage.TextChanged += new System.EventHandler(this.txtYourMessage_TextChanged);
-            // 
-            // btnSend
-            // 
-            this.btnSend.Image = global::Nexa.Properties.Resources.send_message_icon_250990;
-            this.btnSend.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btnSend.Location = new System.Drawing.Point(10, 448);
-            this.btnSend.Name = "btnSend";
-            this.btnSend.Size = new System.Drawing.Size(302, 42);
-            this.btnSend.TabIndex = 5;
-            this.btnSend.Text = "Send";
-            this.btnSend.UseVisualStyleBackColor = true;
-            this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
             // 
             // label3
             // 
@@ -450,7 +330,7 @@
             this.toolStripMenuItem1});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1293, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(1293, 30);
             this.menuStrip1.TabIndex = 2;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -466,62 +346,62 @@
             this.inviteLinkToolStripMenuItem,
             this.joinGroupToolStripMenuItem});
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(32, 24);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(32, 26);
             this.toolStripMenuItem1.Text = "...";
             // 
             // myInformationToolStripMenuItem
             // 
             this.myInformationToolStripMenuItem.Name = "myInformationToolStripMenuItem";
-            this.myInformationToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.myInformationToolStripMenuItem.Size = new System.Drawing.Size(200, 26);
             this.myInformationToolStripMenuItem.Text = "My Information";
             this.myInformationToolStripMenuItem.Click += new System.EventHandler(this.myInformationToolStripMenuItem_Click);
             // 
             // banUserToolStripMenuItem
             // 
             this.banUserToolStripMenuItem.Name = "banUserToolStripMenuItem";
-            this.banUserToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.banUserToolStripMenuItem.Size = new System.Drawing.Size(200, 26);
             this.banUserToolStripMenuItem.Text = "Ban user";
             this.banUserToolStripMenuItem.Click += new System.EventHandler(this.banUserToolStripMenuItem_Click);
             // 
             // savedMessagesToolStripMenuItem
             // 
             this.savedMessagesToolStripMenuItem.Name = "savedMessagesToolStripMenuItem";
-            this.savedMessagesToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.savedMessagesToolStripMenuItem.Size = new System.Drawing.Size(200, 26);
             this.savedMessagesToolStripMenuItem.Text = "Saved Messages";
             this.savedMessagesToolStripMenuItem.Click += new System.EventHandler(this.savedMessagesToolStripMenuItem_Click);
             // 
             // loginHistoryToolStripMenuItem
             // 
             this.loginHistoryToolStripMenuItem.Name = "loginHistoryToolStripMenuItem";
-            this.loginHistoryToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.loginHistoryToolStripMenuItem.Size = new System.Drawing.Size(200, 26);
             this.loginHistoryToolStripMenuItem.Text = "Login History";
             this.loginHistoryToolStripMenuItem.Click += new System.EventHandler(this.loginHistoryToolStripMenuItem_Click);
             // 
             // creatorToGroupToolStripMenuItem
             // 
             this.creatorToGroupToolStripMenuItem.Name = "creatorToGroupToolStripMenuItem";
-            this.creatorToGroupToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.creatorToGroupToolStripMenuItem.Size = new System.Drawing.Size(200, 26);
             this.creatorToGroupToolStripMenuItem.Text = "CreatorToGroup";
             this.creatorToGroupToolStripMenuItem.Click += new System.EventHandler(this.creatorToGroupToolStripMenuItem_Click);
             // 
             // addToolStripMenuItem
             // 
             this.addToolStripMenuItem.Name = "addToolStripMenuItem";
-            this.addToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.addToolStripMenuItem.Size = new System.Drawing.Size(200, 26);
             this.addToolStripMenuItem.Text = "Add to Group";
             this.addToolStripMenuItem.Click += new System.EventHandler(this.addToolStripMenuItem_Click);
             // 
             // inviteLinkToolStripMenuItem
             // 
             this.inviteLinkToolStripMenuItem.Name = "inviteLinkToolStripMenuItem";
-            this.inviteLinkToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.inviteLinkToolStripMenuItem.Size = new System.Drawing.Size(200, 26);
             this.inviteLinkToolStripMenuItem.Text = "InviteLink";
             this.inviteLinkToolStripMenuItem.Click += new System.EventHandler(this.inviteLinkToolStripMenuItem_Click);
             // 
             // joinGroupToolStripMenuItem
             // 
             this.joinGroupToolStripMenuItem.Name = "joinGroupToolStripMenuItem";
-            this.joinGroupToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.joinGroupToolStripMenuItem.Size = new System.Drawing.Size(200, 26);
             this.joinGroupToolStripMenuItem.Text = "JoinGroup";
             this.joinGroupToolStripMenuItem.Click += new System.EventHandler(this.joinGroupToolStripMenuItem_Click);
             // 
@@ -529,13 +409,157 @@
             // 
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick_1);
             // 
-            // label6
+            // btnEditMessage
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(795, 21);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(0, 16);
-            this.label6.TabIndex = 21;
+            this.btnEditMessage.Image = global::Nexa.Properties.Resources.pencil_striped_symbol_for_interface_edit_buttons_icon_icons1;
+            this.btnEditMessage.Location = new System.Drawing.Point(341, 496);
+            this.btnEditMessage.Name = "btnEditMessage";
+            this.btnEditMessage.Size = new System.Drawing.Size(60, 52);
+            this.btnEditMessage.TabIndex = 22;
+            this.btnEditMessage.UseVisualStyleBackColor = true;
+            this.btnEditMessage.Click += new System.EventHandler(this.btnEditMessage_Click);
+            // 
+            // btnDelete
+            // 
+            this.btnDelete.Image = global::Nexa.Properties.Resources.waste_bin_delete_remove_recycle_icon_123840;
+            this.btnDelete.Location = new System.Drawing.Point(275, 555);
+            this.btnDelete.Name = "btnDelete";
+            this.btnDelete.Size = new System.Drawing.Size(60, 52);
+            this.btnDelete.TabIndex = 20;
+            this.btnDelete.UseVisualStyleBackColor = true;
+            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
+            // 
+            // btnGIF
+            // 
+            this.btnGIF.Image = global::Nexa.Properties.Resources.gif_images_file_type_interface_symbol_of_stroke_icon_icons_com_57567;
+            this.btnGIF.Location = new System.Drawing.Point(11, 555);
+            this.btnGIF.Name = "btnGIF";
+            this.btnGIF.Size = new System.Drawing.Size(60, 52);
+            this.btnGIF.TabIndex = 19;
+            this.btnGIF.UseVisualStyleBackColor = true;
+            this.btnGIF.Click += new System.EventHandler(this.btnGIF_Click);
+            // 
+            // btnPinmessages
+            // 
+            this.btnPinmessages.Image = global::Nexa.Properties.Resources.location_pin_place_map_address_placeholder_marker_icon_149108;
+            this.btnPinmessages.Location = new System.Drawing.Point(275, 496);
+            this.btnPinmessages.Name = "btnPinmessages";
+            this.btnPinmessages.Size = new System.Drawing.Size(60, 52);
+            this.btnPinmessages.TabIndex = 18;
+            this.btnPinmessages.UseVisualStyleBackColor = true;
+            this.btnPinmessages.Click += new System.EventHandler(this.btnPinmessages_Click);
+            // 
+            // btnVoicemessage
+            // 
+            this.btnVoicemessage.Image = global::Nexa.Properties.Resources.camera_icon_icons_com_72364__1_;
+            this.btnVoicemessage.Location = new System.Drawing.Point(11, 496);
+            this.btnVoicemessage.Name = "btnVoicemessage";
+            this.btnVoicemessage.Size = new System.Drawing.Size(60, 52);
+            this.btnVoicemessage.TabIndex = 17;
+            this.btnVoicemessage.UseVisualStyleBackColor = true;
+            this.btnVoicemessage.Click += new System.EventHandler(this.btnVoicemessage_Click);
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Image = global::Nexa.Properties.Resources.Nexa;
+            this.pictureBox2.Location = new System.Drawing.Point(549, 205);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(193, 163);
+            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox2.TabIndex = 15;
+            this.pictureBox2.TabStop = false;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::Nexa.Properties.Resources.Nexa;
+            this.pictureBox1.Location = new System.Drawing.Point(119, 121);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(193, 163);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 12;
+            this.pictureBox1.TabStop = false;
+            // 
+            // btnEmoji
+            // 
+            this.btnEmoji.Image = global::Nexa.Properties.Resources.emoji_smile_icon_160172;
+            this.btnEmoji.Location = new System.Drawing.Point(77, 554);
+            this.btnEmoji.Name = "btnEmoji";
+            this.btnEmoji.Size = new System.Drawing.Size(60, 52);
+            this.btnEmoji.TabIndex = 11;
+            this.btnEmoji.UseVisualStyleBackColor = true;
+            this.btnEmoji.Click += new System.EventHandler(this.btnEmoji_Click);
+            // 
+            // btnLocation
+            // 
+            this.btnLocation.Image = global::Nexa.Properties.Resources.shop_place_marker_address_location_pin_map_ecommerce_icon_224950;
+            this.btnLocation.Location = new System.Drawing.Point(143, 554);
+            this.btnLocation.Name = "btnLocation";
+            this.btnLocation.Size = new System.Drawing.Size(60, 52);
+            this.btnLocation.TabIndex = 10;
+            this.btnLocation.UseVisualStyleBackColor = true;
+            this.btnLocation.Click += new System.EventHandler(this.btnLocation_Click);
+            // 
+            // btnSendImage
+            // 
+            this.btnSendImage.Image = global::Nexa.Properties.Resources.image_111003;
+            this.btnSendImage.Location = new System.Drawing.Point(209, 554);
+            this.btnSendImage.Name = "btnSendImage";
+            this.btnSendImage.Size = new System.Drawing.Size(60, 52);
+            this.btnSendImage.TabIndex = 9;
+            this.btnSendImage.UseVisualStyleBackColor = true;
+            this.btnSendImage.Click += new System.EventHandler(this.btnSendImage_Click);
+            // 
+            // btnFile
+            // 
+            this.btnFile.Image = global::Nexa.Properties.Resources.fileinterfacesymboloftextpapersheet_79740__1_;
+            this.btnFile.Location = new System.Drawing.Point(77, 496);
+            this.btnFile.Name = "btnFile";
+            this.btnFile.Size = new System.Drawing.Size(60, 52);
+            this.btnFile.TabIndex = 3;
+            this.btnFile.UseVisualStyleBackColor = true;
+            this.btnFile.Click += new System.EventHandler(this.btnFile_Click);
+            // 
+            // btnVideoCall
+            // 
+            this.btnVideoCall.Image = global::Nexa.Properties.Resources.iconfinder_contat_us_1call_4211833_115049;
+            this.btnVideoCall.Location = new System.Drawing.Point(143, 496);
+            this.btnVideoCall.Name = "btnVideoCall";
+            this.btnVideoCall.Size = new System.Drawing.Size(60, 52);
+            this.btnVideoCall.TabIndex = 8;
+            this.btnVideoCall.UseVisualStyleBackColor = true;
+            this.btnVideoCall.Click += new System.EventHandler(this.btnVideoCall_Click);
+            // 
+            // btnVoice
+            // 
+            this.btnVoice.Image = global::Nexa.Properties.Resources.wondicon_ui_free_speaker_111240;
+            this.btnVoice.Location = new System.Drawing.Point(209, 496);
+            this.btnVoice.Name = "btnVoice";
+            this.btnVoice.Size = new System.Drawing.Size(60, 52);
+            this.btnVoice.TabIndex = 7;
+            this.btnVoice.UseVisualStyleBackColor = true;
+            this.btnVoice.Click += new System.EventHandler(this.btnVoice_Click);
+            // 
+            // btnSend
+            // 
+            this.btnSend.Image = global::Nexa.Properties.Resources.send_message_icon_250990;
+            this.btnSend.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnSend.Location = new System.Drawing.Point(10, 448);
+            this.btnSend.Name = "btnSend";
+            this.btnSend.Size = new System.Drawing.Size(302, 42);
+            this.btnSend.TabIndex = 5;
+            this.btnSend.Text = "Send";
+            this.btnSend.UseVisualStyleBackColor = true;
+            this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
+            // 
+            // btnReplay
+            // 
+            this.btnReplay.Image = global::Nexa.Properties.Resources.replay_icon_icons_com_64443;
+            this.btnReplay.Location = new System.Drawing.Point(341, 555);
+            this.btnReplay.Name = "btnReplay";
+            this.btnReplay.Size = new System.Drawing.Size(60, 52);
+            this.btnReplay.TabIndex = 23;
+            this.btnReplay.UseVisualStyleBackColor = true;
+            this.btnReplay.Click += new System.EventHandler(this.btnReplay_Click);
             // 
             // Nexa
             // 
@@ -559,10 +583,10 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -615,5 +639,7 @@
         private System.Windows.Forms.ToolStripMenuItem myInformationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem joinGroupToolStripMenuItem;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Button btnEditMessage;
+        private System.Windows.Forms.Button btnReplay;
     }
 }

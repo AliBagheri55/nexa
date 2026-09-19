@@ -338,6 +338,12 @@
     <Compile Include="EditInformation.Designer.cs">
       <DependentUpon>EditInformation.cs</DependentUpon>
     </Compile>
+    <Compile Include="EditMessageForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditMessageForm.Designer.cs">
+      <DependentUpon>EditMessageForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ForgotPassword.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -433,6 +439,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="EditInformation.resx">
       <DependentUpon>EditInformation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EditMessageForm.resx">
+      <DependentUpon>EditMessageForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ForgotPassword.resx">
       <DependentUpon>ForgotPassword.cs</DependentUpon>
@@ -563,6 +572,9 @@
     <None Include="Resources\location_pin_place_map_address_placeholder_marker_icon_149108.png" />
     <None Include="Resources\gif-images-file-type-interface-symbol-of-stroke_icon-icons.com_57567.png" />
     <None Include="Resources\waste_bin_delete_remove_recycle_icon_123840.png" />
+    <None Include="Resources\pencil-striped-symbol-for-interface-edit-buttons_icon-icons.com_56782.png" />
+    <None Include="Resources\pencil-striped-symbol-for-interface-edit-buttons_icon-icons.com_567821.png" />
+    <None Include="Resources\replay_icon-icons.com_64443.png" />
     <Content Include="WebRTC\call.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

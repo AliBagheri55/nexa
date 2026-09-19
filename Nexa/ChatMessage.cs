@@ -23,8 +23,18 @@ namespace Nexa
         public byte[] ImageData { get; set; }
 
         public byte[] VideoData { get; set; }
+        public int Id { get; set; }
 
+        public int YourId { get; set; }
+
+        public string YourMessage { get; set; }
+        public int SenderId { get; set; }
         public byte[] GifData { get; set; }
+        public int? ReplyToMessageId { get; set; }
+
+        public string ReplyToText { get; set; }
+
+        public string ReplyToSenderName { get; set; }
 
         public double? Latitude { get; set; }
 

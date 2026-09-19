@@ -1,7 +1,10 @@
 ﻿using System;
-using System.Data;
-using System.Data.SqlClient;
 using System.Drawing;
+using System.Net;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Nexa
@@ -11,15 +14,20 @@ namespace Nexa
         private string selectedPhotoPath = "";
         private string captchaCode;
 
-        string connectionString =
-            @"Server=.;Database=Nexa;Trusted_Connection=True;TrustServerCertificate=True;";
+        private static readonly HttpClient httpClient =
+            new HttpClient();
+
+        private const string ApiBaseUrl =
+            "https://localhost:7199";
 
         public CreateAnAccount()
         {
             InitializeComponent();
         }
 
-        private void CreateAnAccount_Load(object sender, EventArgs e)
+        private void CreateAnAccount_Load(
+            object sender,
+            EventArgs e)
         {
             GenerateCaptcha();
         }
@@ -29,7 +37,8 @@ namespace Nexa
             const string chars =
                 "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
-            Random random = new Random();
+            Random random =
+                new Random();
 
             captchaCode = "";
 
@@ -39,25 +48,28 @@ namespace Nexa
                     chars[random.Next(chars.Length)];
             }
 
-            Bitmap bitmap = new Bitmap(
-                picSecurityCode.Width,
-                picSecurityCode.Height
-            );
+            Bitmap bitmap =
+                new Bitmap(
+                    picSecurityCode.Width,
+                    picSecurityCode.Height);
 
-            using (Graphics g = Graphics.FromImage(bitmap))
+            using (Graphics g =
+                   Graphics.FromImage(bitmap))
             {
                 g.Clear(Color.White);
 
                 using (Font font =
-                    new Font("Arial", 24, FontStyle.Bold))
+                       new Font(
+                           "Arial",
+                           24,
+                           FontStyle.Bold))
                 {
                     g.DrawString(
                         captchaCode,
                         font,
                         Brushes.Black,
                         20,
-                        10
-                    );
+                        10);
                 }
             }
 
@@ -66,20 +78,25 @@ namespace Nexa
                 picSecurityCode.Image.Dispose();
             }
 
-            picSecurityCode.Image = bitmap;
+            picSecurityCode.Image =
+                bitmap;
         }
 
-        private void btnProfilePhoto_Click(object sender, EventArgs e)
+        private void btnProfilePhoto_Click(
+            object sender,
+            EventArgs e)
         {
             using (OpenFileDialog openFileDialog =
-                new OpenFileDialog())
+                   new OpenFileDialog())
             {
-                openFileDialog.Title = "انتخاب عکس";
+                openFileDialog.Title =
+                    "انتخاب عکس";
 
                 openFileDialog.Filter =
                     "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif";
 
-                openFileDialog.Multiselect = false;
+                openFileDialog.Multiselect =
+                    false;
 
                 if (openFileDialog.ShowDialog() ==
                     DialogResult.OK)
@@ -94,7 +111,8 @@ namespace Nexa
                     }
 
                     using (Image tempImage =
-                        Image.FromFile(selectedPhotoPath))
+                           Image.FromFile(
+                               selectedPhotoPath))
                     {
                         picPhoto.Image =
                             new Bitmap(tempImage);
@@ -106,12 +124,18 @@ namespace Nexa
             }
         }
 
-        private void btnCreate_Click(object sender, EventArgs e)
+        private async void btnCreate_Click(
+            object sender,
+            EventArgs e)
         {
-            if (txtSecurityCode.Text.Trim() != captchaCode)
+            if (txtSecurityCode.Text.Trim() !=
+                captchaCode)
             {
                 MessageBox.Show(
-                    "کد کپچا اشتباه است!");
+                    "کد کپچا اشتباه است!",
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
 
                 txtSecurityCode.Clear();
 
@@ -124,232 +148,266 @@ namespace Nexa
                 txtRepeatPassword.Text)
             {
                 MessageBox.Show(
-                    "مقادیر وارد شده یکسان نیستند!");
+                    "مقادیر وارد شده یکسان نیستند!",
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
 
                 return;
             }
 
-            using (SqlConnection con =
-                new SqlConnection(connectionString))
+            if (string.IsNullOrWhiteSpace(
+                txtFirstAndLastName.Text))
             {
-                try
-                {
-                    con.Open();
+                MessageBox.Show(
+                    "نام و نام خانوادگی را وارد کنید!",
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
 
-                    string checkQuery = @"
-                        SELECT COUNT(*)
-                        FROM Users
-                        WHERE YourID = @YourID";
+                return;
+            }
 
-                    using (SqlCommand checkCmd =
-                        new SqlCommand(checkQuery, con))
+            if (string.IsNullOrWhiteSpace(
+                txtId.Text))
+            {
+                MessageBox.Show(
+                    "YourID را وارد کنید!",
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(
+                txtPhoneNumber.Text))
+            {
+                MessageBox.Show(
+                    "شماره تلفن را وارد کنید!",
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(
+                txtPassword.Text))
+            {
+                MessageBox.Show(
+                    "رمز عبور را وارد کنید!",
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                return;
+            }
+
+            try
+            {
+                var registerRequest =
+                    new
                     {
-                        checkCmd.Parameters.Add(
-                            "@YourID",
-                            SqlDbType.NVarChar,
-                            50
-                        ).Value =
-                            txtId.Text.Trim();
+                        firstAndLastName =
+                            txtFirstAndLastName.Text.Trim(),
 
-                        int count =
-                            Convert.ToInt32(
-                                checkCmd.ExecuteScalar());
+                        yourID =
+                            txtId.Text.Trim(),
 
-                        if (count > 0)
-                        {
-                            MessageBox.Show(
-                                "Id تکراری است.");
+                        phoneNumber =
+                            txtPhoneNumber.Text.Trim(),
 
-                            return;
-                        }
-                    }
+                        password =
+                            txtPassword.Text,
 
-                    string insertQuery = @"
-                        INSERT INTO Users
-                        (
-                            FirstAndLastName,
-                            YourID,
-                            PhoneNumber,
-                            Password,
-                            Bio,
-                            ProfilePhoto
-                        )
-                        VALUES
-                        (
-                            @FirstAndLastName,
-                            @YourID,
-                            @PhoneNumber,
-                            @Password,
-                            @Bio,
-                            @ProfilePhoto
-                        )";
-
-                    using (SqlCommand insertCmd =
-                        new SqlCommand(insertQuery, con))
-                    {
-                        insertCmd.Parameters.Add(
-                            "@FirstAndLastName",
-                            SqlDbType.NVarChar,
-                            100
-                        ).Value =
-                            txtFirstAndLastName.Text.Trim();
-
-                        insertCmd.Parameters.Add(
-                            "@YourID",
-                            SqlDbType.NVarChar,
-                            50
-                        ).Value =
-                            txtId.Text.Trim();
-
-                        insertCmd.Parameters.Add(
-                            "@PhoneNumber",
-                            SqlDbType.NVarChar,
-                            50
-                        ).Value =
-                            txtPhoneNumber.Text.Trim();
-
-                        insertCmd.Parameters.Add(
-                            "@Password",
-                            SqlDbType.NVarChar,
-                            255
-                        ).Value =
-                            txtPassword.Text;
-
-                        insertCmd.Parameters.Add(
-                            "@Bio",
-                            SqlDbType.NVarChar,
-                            500
-                        ).Value =
+                        bio =
                             string.IsNullOrWhiteSpace(
                                 txtBio.Text)
-                            ? (object)DBNull.Value
-                            : txtBio.Text.Trim();
+                            ? null
+                            : txtBio.Text.Trim(),
 
-                        if (!string.IsNullOrWhiteSpace(
-                            selectedPhotoPath))
-                        {
-                            insertCmd.Parameters.Add(
-                                "@ProfilePhoto",
-                                SqlDbType.NVarChar,
-                                -1
-                            ).Value =
-                                selectedPhotoPath;
-                        }
-                        else
-                        {
-                            insertCmd.Parameters.Add(
-                                "@ProfilePhoto",
-                                SqlDbType.NVarChar,
-                                -1
-                            ).Value =
-                                DBNull.Value;
-                        }
+                        profilePhoto =
+                            string.IsNullOrWhiteSpace(
+                                selectedPhotoPath)
+                            ? null
+                            : selectedPhotoPath
+                    };
 
-                        insertCmd.ExecuteNonQuery();
-                    }
-                }
-                catch (Exception ex)
+                string json =
+                    JsonSerializer.Serialize(
+                        registerRequest);
+
+                StringContent content =
+                    new StringContent(
+                        json,
+                        Encoding.UTF8,
+                        "application/json");
+
+                string url =
+                    ApiBaseUrl +
+                    "/api/Auth/register";
+
+                btnCreate.Enabled =
+                    false;
+
+                Cursor =
+                    Cursors.WaitCursor;
+
+                HttpResponseMessage response =
+                    await httpClient.PostAsync(
+                        url,
+                        content);
+
+                content.Dispose();
+
+                string responseText =
+                    await response.Content
+                        .ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
                 {
                     MessageBox.Show(
-                        "خطا در ساخت حساب:\n\n" +
-                        ex.Message);
+                        "حساب با موفقیت ساخته شد.",
+                        "Nexa",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+
+                    txtFirstAndLastName.Clear();
+                    txtId.Clear();
+                    txtPhoneNumber.Clear();
+                    txtPassword.Clear();
+                    txtRepeatPassword.Clear();
+                    txtBio.Clear();
+                    txtSecurityCode.Clear();
+
+                    Hide();
+
+                    frmLogin login =
+                        new frmLogin();
+
+                    login.ShowDialog();
 
                     return;
                 }
+
+                if (response.StatusCode ==
+                    HttpStatusCode.Conflict)
+                {
+                    MessageBox.Show(
+                        "این YourID قبلاً ثبت شده است.",
+                        "Nexa",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+
+                    return;
+                }
+
+                if (response.StatusCode ==
+                    HttpStatusCode.BadRequest)
+                {
+                    ShowApiError(
+                        responseText,
+                        "اطلاعات وارد شده صحیح نیست.");
+
+                    return;
+                }
+
+                ShowApiError(
+                    responseText,
+                    "خطا در ثبت نام.");
             }
-
-            Random random = new Random();
-
-            string code;
-
-            using (SqlConnection con =
-                new SqlConnection(connectionString))
+            catch (HttpRequestException ex)
             {
-                try
+                MessageBox.Show(
+                    "ارتباط با Nexa.Api برقرار نشد.\n\n" +
+                    "آدرس API:\n" +
+                    ApiBaseUrl +
+                    "\n\n" +
+                    ex.Message,
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+            catch (TaskCanceledException)
+            {
+                MessageBox.Show(
+                    "درخواست به سرور بیش از حد طول کشید.",
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "خطا در ثبت نام:\n\n" +
+                    ex.Message,
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+            finally
+            {
+                btnCreate.Enabled =
+                    true;
+
+                Cursor =
+                    Cursors.Default;
+            }
+        }
+
+        private void ShowApiError(
+            string responseText,
+            string defaultMessage)
+        {
+            try
+            {
+                JsonDocument document =
+                    JsonDocument.Parse(
+                        responseText);
+
+                JsonElement messageElement;
+
+                if (document.RootElement.TryGetProperty(
+                    "message",
+                    out messageElement))
                 {
-                    con.Open();
+                    string message =
+                        messageElement.GetString();
 
-                    while (true)
-                    {
-                        code =
-                            random.Next(
-                                100000,
-                                1000000
-                            ).ToString();
-
-                        string checkQuery = @"
-                            SELECT COUNT(*)
-                            FROM Users
-                            WHERE Code = @Code";
-
-                        using (SqlCommand checkCmd =
-                            new SqlCommand(
-                                checkQuery,
-                                con))
-                        {
-                            checkCmd.Parameters.Add(
-                                "@Code",
-                                SqlDbType.NVarChar,
-                                50
-                            ).Value = code;
-
-                            int count =
-                                Convert.ToInt32(
-                                    checkCmd.ExecuteScalar());
-
-                            if (count == 0)
-                            {
-                                break;
-                            }
-                        }
-                    }
-
-                    string updateQuery = @"
-                        UPDATE Users
-                        SET Code = @Code
-                        WHERE YourID = @YourID";
-
-                    using (SqlCommand cmd =
-                        new SqlCommand(
-                            updateQuery,
-                            con))
-                    {
-                        cmd.Parameters.Add(
-                            "@Code",
-                            SqlDbType.NVarChar,
-                            50
-                        ).Value = code;
-
-                        cmd.Parameters.Add(
-                            "@YourID",
-                            SqlDbType.NVarChar,
-                            50
-                        ).Value =
-                            txtId.Text.Trim();
-
-                        cmd.ExecuteNonQuery();
-                    }
+                    document.Dispose();
 
                     MessageBox.Show(
-                        "کد بازیابی حساب شما: " +
-                        code +
-                        "\n\nاین کد را در جای امن نگه دارید.");
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(
-                        "خطا در ساخت کد بازیابی:\n\n" +
-                        ex.Message);
+                        string.IsNullOrWhiteSpace(message)
+                            ? defaultMessage
+                            : message,
+                        "Nexa",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
 
                     return;
                 }
+
+                document.Dispose();
+
+                MessageBox.Show(
+                    defaultMessage +
+                    "\n\n" +
+                    responseText,
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
-
-            Hide();
-
-            frmLogin login = new frmLogin();
-
-            login.ShowDialog();
+            catch
+            {
+                MessageBox.Show(
+                    defaultMessage +
+                    "\n\n" +
+                    responseText,
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
         }
 
         private void lbllBack_LinkClicked(
@@ -358,7 +416,8 @@ namespace Nexa
         {
             Hide();
 
-            frmLogin login = new frmLogin();
+            frmLogin login =
+                new frmLogin();
 
             login.ShowDialog();
         }

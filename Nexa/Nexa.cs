@@ -24,6 +24,12 @@ namespace Nexa
         private SpeechRecognitionEngine recognizer;
         private bool isListening = false;
         private int selectedGroupId = 0;
+        private ChatMessage replyToMessage;
+
+        private Panel replyPanel;
+        private Label replySenderLabel;
+        private Label replyTextLabel;
+        private Button replyCancelButton;
         private string userPhone;
         private readonly object videoLock = new object();
         private WaveInEvent waveIn;
@@ -71,6 +77,7 @@ namespace Nexa
         }
         private async void Nexa_Load(object sender, EventArgs e)
         {
+
             try
             {
                 if (currentUserId == 0 &&
@@ -91,7 +98,7 @@ namespace Nexa
                 }
 
                 CreateMessageContextMenu();
-
+                CreateReplyPanel();
                 await LoadChatHistoryFromDatabase();
 
                 LoadStories();
@@ -1077,8 +1084,8 @@ namespace Nexa
         }
 
         private void btnSend_Click(
-      object sender,
-      EventArgs e)
+       object sender,
+       EventArgs e)
         {
             if (currentUserId == 0)
             {
@@ -1091,7 +1098,6 @@ namespace Nexa
             if (string.IsNullOrWhiteSpace(
                 txtYourMessage.Text))
                 return;
-
 
             if (selectedGroupId > 0)
             {
@@ -1121,28 +1127,30 @@ namespace Nexa
                     con.Open();
 
                     string query = @"
-                INSERT INTO YourMessages
-                (
-                    YourId,
-                    YourMessage,
-                    AnswerId,
-                    AnswerMessage,
-                    IsRead,
-                    MessageType,
-                    SentAt
-                )
-                VALUES
-                (
-                    @YourId,
-                    @YourMessage,
-                    @AnswerId,
-                    @AnswerMessage,
-                    @IsRead,
-                    'Text',
-                    GETDATE()
-                );
+INSERT INTO YourMessages
+(
+    YourId,
+    YourMessage,
+    AnswerId,
+    AnswerMessage,
+    ReplyToMessageId,
+    IsRead,
+    MessageType,
+    SentAt
+)
+VALUES
+(
+    @YourId,
+    @YourMessage,
+    @AnswerId,
+    @AnswerMessage,
+    @ReplyToMessageId,
+    @IsRead,
+    'Text',
+    GETDATE()
+);
 
-                SELECT SCOPE_IDENTITY();";
+SELECT SCOPE_IDENTITY();";
 
                     using (SqlCommand cmd =
                            new SqlCommand(query, con))
@@ -1170,6 +1178,13 @@ namespace Nexa
                             "";
 
                         cmd.Parameters.Add(
+                            "@ReplyToMessageId",
+                            SqlDbType.Int).Value =
+                            replyToMessage != null
+                            ? (object)replyToMessage.MessageId
+                            : DBNull.Value;
+
+                        cmd.Parameters.Add(
                             "@IsRead",
                             SqlDbType.Bit).Value =
                             false;
@@ -1178,19 +1193,50 @@ namespace Nexa
                             Convert.ToInt32(
                                 cmd.ExecuteScalar());
 
-                        listAnswer.Items.Add(
+                        ChatMessage newMessage =
                             new ChatMessage
                             {
                                 MessageId = messageId,
+                                SenderId = currentUserId,
                                 Text = "شما: " + message,
                                 IsRead = false,
                                 SentAt = DateTime.Now,
-                                MessageType = "Text"
-                            });
+                                MessageType = "Text",
+                                ReplyToMessageId =
+                                    replyToMessage != null
+                                    ? (int?)replyToMessage.MessageId
+                                    : null
+                            };
+
+                        if (replyToMessage != null)
+                        {
+                            newMessage.ReplyToText =
+                                replyToMessage.Text;
+
+                            newMessage.ReplyToSenderName =
+                                replyToMessage.SenderId ==
+                                currentUserId
+                                ? "شما"
+                                : label3.Text;
+                        }
+
+                        listAnswer.Items.Add(
+                            newMessage);
                     }
                 }
 
                 txtYourMessage.Clear();
+
+                replyToMessage = null;
+
+                if (replyPanel != null)
+                {
+                    replyPanel.Visible = false;
+
+                    replySenderLabel.Text = "";
+
+                    replyTextLabel.Text = "";
+                }
 
                 if (listAnswer.Items.Count > 0)
                 {
@@ -1321,6 +1367,7 @@ namespace Nexa
                     MessageBoxIcon.Error);
             }
         }
+
         private void LoadConversation()
         {
             if (currentUserId == 0 ||
@@ -1337,34 +1384,35 @@ namespace Nexa
                        new SqlConnection(connectionString))
                 {
                     string query = @"
-                SELECT
-                    Id,
-                    YourId,
-                    AnswerId,
-                    YourMessage,
-                    IsRead,
-                    SentAt,
-                    MessageType,
-                    VoiceData,
-                    FileName,
-                    FileData,
-                    ImageData,
-                    Latitude,
-                    Longitude,
-                    VideoData,
-                    GifData
-                FROM YourMessages
-                WHERE
-                (
-                    YourId = @CurrentUserId
-                    AND AnswerId = @SelectedUserId
-                )
-                OR
-                (
-                    YourId = @SelectedUserId
-                    AND AnswerId = @CurrentUserId
-                )
-                ORDER BY Id ASC";
+        SELECT
+            Id,
+            YourId,
+            AnswerId,
+            YourMessage,
+            ReplyToMessageId,
+            IsRead,
+            SentAt,
+            MessageType,
+            VoiceData,
+            FileName,
+            FileData,
+            ImageData,
+            Latitude,
+            Longitude,
+            VideoData,
+            GifData
+        FROM YourMessages
+        WHERE
+        (
+            YourId = @CurrentUserId
+            AND AnswerId = @SelectedUserId
+        )
+        OR
+        (
+            YourId = @SelectedUserId
+            AND AnswerId = @CurrentUserId
+        )
+        ORDER BY Id ASC";
 
                     using (SqlCommand cmd =
                            new SqlCommand(query, con))
@@ -1394,6 +1442,16 @@ namespace Nexa
                                     Convert.ToInt32(
                                         reader["YourId"]);
 
+                                int? replyToMessageId = null;
+
+                                if (reader["ReplyToMessageId"] !=
+                                    DBNull.Value)
+                                {
+                                    replyToMessageId =
+                                        Convert.ToInt32(
+                                            reader["ReplyToMessageId"]);
+                                }
+
                                 string messageType =
                                     reader["MessageType"] ==
                                     DBNull.Value
@@ -1420,6 +1478,9 @@ namespace Nexa
                                         MessageId =
                                             messageId,
 
+                                        SenderId =
+                                            senderId,
+
                                         IsRead =
                                             isRead,
 
@@ -1427,7 +1488,10 @@ namespace Nexa
                                             sentAt,
 
                                         MessageType =
-                                            messageType
+                                            messageType,
+
+                                        ReplyToMessageId =
+                                            replyToMessageId
                                     };
 
                                 if (messageType == "Voice")
@@ -1595,6 +1659,29 @@ namespace Nexa
                                         : label3.Text +
                                           ": " + message;
                                 }
+
+                                if (chatMessage.ReplyToMessageId.HasValue)
+                                {
+                                    foreach (ChatMessage oldMessage
+                                             in listAnswer.Items)
+                                    {
+                                        if (oldMessage.MessageId ==
+                                            chatMessage.ReplyToMessageId.Value)
+                                        {
+                                            chatMessage.ReplyToText =
+                                                oldMessage.Text;
+
+                                            chatMessage.ReplyToSenderName =
+                                                oldMessage.SenderId ==
+                                                currentUserId
+                                                ? "شما"
+                                                : label3.Text;
+
+                                            break;
+                                        }
+                                    }
+                                }
+
                                 LoadReactionForMessage(
                                     chatMessage);
 
@@ -1621,7 +1708,6 @@ namespace Nexa
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
-
         }
         private void LoadReactionForMessage(
         ChatMessage message)
@@ -1835,21 +1921,14 @@ namespace Nexa
                                     ? DateTime.Now
                                     : Convert.ToDateTime(
                                         reader["SentAt"]);
-
                                 ChatMessage chatMessage =
                                     new ChatMessage
                                     {
-                                        MessageId =
-                                            messageId,
-
-                                        IsRead =
-                                            isRead,
-
-                                        SentAt =
-                                            sentAt,
-
-                                        MessageType =
-                                            messageType
+                                        MessageId = messageId,
+                                        SenderId = senderId,
+                                        IsRead = isRead,
+                                        SentAt = sentAt,
+                                        MessageType = messageType
                                     };
 
                                 if (messageType == "Video")
@@ -4122,39 +4201,52 @@ namespace Nexa
             EventArgs e)
         {
         }
-        private void listAnswer_DrawItem(object sender, DrawItemEventArgs e)
+        private void listAnswer_DrawItem(
+     object sender,
+     DrawItemEventArgs e)
         {
             if (e.Index < 0)
                 return;
 
-            object item = listAnswer.Items[e.Index];
+            object item =
+                listAnswer.Items[e.Index];
 
             string text = "";
             string senderName = "";
             string dateTimeText = "";
             bool isMyMessage = false;
-            ChatMessage privateMessage = item as ChatMessage;
+
+            ChatMessage privateMessage =
+                item as ChatMessage;
+
+            GroupMessage groupMessage =
+                item as GroupMessage;
 
             if (privateMessage != null)
             {
-                text = privateMessage.Text ?? "";
+                text =
+                    privateMessage.Text ?? "";
 
-                isMyMessage = text.StartsWith("شما:");
+                isMyMessage =
+                    privateMessage.SenderId ==
+                    currentUserId;
 
                 dateTimeText =
                     privateMessage.SentAt.ToString(
                         "HH:mm  yyyy/MM/dd");
             }
-            GroupMessage groupMessage = item as GroupMessage;
 
             if (groupMessage != null)
             {
-                senderName = groupMessage.SenderName ?? "";
+                senderName =
+                    groupMessage.SenderName ?? "";
 
-                text = groupMessage.MessageText ?? "";
+                text =
+                    groupMessage.MessageText ?? "";
 
                 isMyMessage =
-                    groupMessage.SenderId == currentUserId;
+                    groupMessage.SenderId ==
+                    currentUserId;
 
                 if (!isMyMessage &&
                     !string.IsNullOrWhiteSpace(senderName))
@@ -4169,11 +4261,13 @@ namespace Nexa
                     groupMessage.SentAt.ToString(
                         "HH:mm  yyyy/MM/dd");
             }
+
             if (privateMessage == null &&
                 groupMessage == null)
             {
                 return;
             }
+
             Color messageColor =
                 isMyMessage
                 ? Color.FromArgb(232, 245, 233)
@@ -4186,24 +4280,139 @@ namespace Nexa
                     backgroundBrush,
                     e.Bounds);
             }
+
+            int currentY =
+                e.Bounds.Top + 5;
+
+            if (privateMessage != null &&
+                privateMessage.ReplyToMessageId.HasValue &&
+                !string.IsNullOrWhiteSpace(
+                    privateMessage.ReplyToText))
+            {
+                Rectangle replyRectangle =
+                    new Rectangle(
+                        e.Bounds.Left + 8,
+                        currentY,
+                        e.Bounds.Width - 16,
+                        28);
+
+                using (Brush replyBackgroundBrush =
+                       new SolidBrush(
+                           Color.FromArgb(
+                               220,
+                               230,
+                               240)))
+                {
+                    e.Graphics.FillRectangle(
+                        replyBackgroundBrush,
+                        replyRectangle);
+                }
+
+                string replySender =
+                    privateMessage.ReplyToSenderName;
+
+                if (string.IsNullOrWhiteSpace(
+                    replySender))
+                {
+                    replySender = "پیام";
+                }
+
+                string replyText =
+                    privateMessage.ReplyToText;
+
+                if (replyText.StartsWith("شما: "))
+                {
+                    replyText =
+                        replyText.Substring(5);
+                }
+                else if (
+                    !string.IsNullOrWhiteSpace(
+                        label3.Text) &&
+                    replyText.StartsWith(
+                        label3.Text + ": "))
+                {
+                    replyText =
+                        replyText.Substring(
+                            label3.Text.Length + 2);
+                }
+
+                if (replyText.Length > 45)
+                {
+                    replyText =
+                        replyText.Substring(
+                            0,
+                            45) +
+                        "...";
+                }
+
+                using (Font replySenderFont =
+                       new Font(
+                           e.Font.FontFamily,
+                           8,
+                           FontStyle.Bold))
+                using (Brush replySenderBrush =
+                       new SolidBrush(
+                           Color.FromArgb(
+                               30,
+                               100,
+                               180)))
+                {
+                    e.Graphics.DrawString(
+                        "↩ " +
+                        replySender,
+                        replySenderFont,
+                        replySenderBrush,
+                        replyRectangle.Left + 8,
+                        replyRectangle.Top + 3);
+                }
+
+                using (Font replyTextFont =
+                       new Font(
+                           e.Font.FontFamily,
+                           8))
+                using (Brush replyTextBrush =
+                       new SolidBrush(
+                           Color.FromArgb(
+                               80,
+                               80,
+                               80)))
+                {
+                    e.Graphics.DrawString(
+                        replyText,
+                        replyTextFont,
+                        replyTextBrush,
+                        replyRectangle.Left + 8,
+                        replyRectangle.Top + 14);
+                }
+
+                currentY += 32;
+            }
+
             using (Brush textBrush =
                    new SolidBrush(
-                       Color.FromArgb(45, 45, 45)))
+                       Color.FromArgb(
+                           45,
+                           45,
+                           45)))
             {
                 e.Graphics.DrawString(
                     text,
                     e.Font,
                     textBrush,
                     e.Bounds.Left + 8,
-                    e.Bounds.Top + 5);
+                    currentY);
             }
+
             using (Font dateFont =
                    new Font(
                        e.Font.FontFamily,
                        8))
             using (Brush dateBrush =
                    new SolidBrush(
-                       Color.FromArgb(120, 120, 120)))
+                       Color.FromArgb(
+                           120,
+                           120,
+                           120)))
             {
                 SizeF textSize =
                     e.Graphics.MeasureString(
@@ -4218,8 +4427,9 @@ namespace Nexa
                     12 +
                     textSize.Width +
                     10,
-                    e.Bounds.Top + 7);
+                    currentY + 2);
             }
+
             if (privateMessage != null &&
                 isMyMessage)
             {
@@ -4230,8 +4440,14 @@ namespace Nexa
 
                 Color checkColor =
                     privateMessage.IsRead
-                    ? Color.FromArgb(46, 125, 50)
-                    : Color.FromArgb(130, 130, 130);
+                    ? Color.FromArgb(
+                        46,
+                        125,
+                        50)
+                    : Color.FromArgb(
+                        130,
+                        130,
+                        130);
 
                 using (Font checkFont =
                        new Font(
@@ -4259,7 +4475,7 @@ namespace Nexa
                         textSize.Width +
                         dateSize.Width +
                         20,
-                        e.Bounds.Top + 5);
+                        currentY);
                 }
             }
 
@@ -4907,17 +5123,127 @@ namespace Nexa
 
             listAnswer.MouseDown += listAnswer_MouseDown;
         }
-        private void listAnswer_MouseDown(object sender, MouseEventArgs e)
+        private void listAnswer_MouseDown(
+     object sender,
+     MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Right)
                 return;
 
-            int index = listAnswer.IndexFromPoint(e.Location);
+            int index =
+                listAnswer.IndexFromPoint(e.Location);
 
-            if (index >= 0 &&
-                index < listAnswer.Items.Count)
+            if (index < 0 ||
+                index >= listAnswer.Items.Count)
+                return;
+
+            listAnswer.SelectedIndex = index;
+
+            ChatMessage message =
+                listAnswer.Items[index]
+                as ChatMessage;
+
+            if (message == null)
+                return;
+
+            ContextMenuStrip menu =
+                new ContextMenuStrip();
+
+            ToolStripMenuItem replyItem =
+                new ToolStripMenuItem(
+                    "↩ پاسخ");
+
+            replyItem.Click +=
+       (s, args) =>
+       {
+           ShowReplyPanel(message);
+       };
+
+            ToolStripMenuItem saveItem =
+                new ToolStripMenuItem(
+                    "ذخیره پیام");
+
+            saveItem.Click +=
+                (s, args) =>
+                {
+                    SaveSelectedMessage();
+                };
+
+            menu.Items.Add(replyItem);
+            menu.Items.Add(new ToolStripSeparator());
+            menu.Items.Add(saveItem);
+
+            menu.Show(
+                listAnswer,
+                e.Location);
+        }
+        private void SaveSelectedMessage()
+        {
+            if (listAnswer.SelectedItem == null)
+                return;
+
+            if (!(listAnswer.SelectedItem is ChatMessage message))
+                return;
+
+            if (message.Id <= 0)
+                return;
+
+            try
             {
-                listAnswer.SelectedIndex = index;
+                using (SqlConnection con =
+                       new SqlConnection(connectionString))
+                {
+                    con.Open();
+
+                    string query = @"
+                IF NOT EXISTS
+                (
+                    SELECT 1
+                    FROM SavedMessages
+                    WHERE MessageId = @MessageId
+                    AND UserId = @UserId
+                )
+                BEGIN
+                    INSERT INTO SavedMessages
+                    (
+                        MessageId,
+                        UserId
+                    )
+                    VALUES
+                    (
+                        @MessageId,
+                        @UserId
+                    )
+                END";
+
+                    using (SqlCommand cmd =
+                           new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.Add(
+                            "@MessageId",
+                            SqlDbType.Int).Value = message.Id;
+
+                        cmd.Parameters.Add(
+                            "@UserId",
+                            SqlDbType.Int).Value = currentUserId;
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                MessageBox.Show(
+                    "پیام ذخیره شد.",
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "خطا در ذخیره پیام:\n\n" + ex.Message,
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
         }
         private void SaveMessageMenu_Click(object sender, EventArgs e)
@@ -6503,6 +6829,357 @@ namespace Nexa
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
+        }
+
+        private async void btnEditMessage_Click(object sender, EventArgs e)
+        {
+            if (listAnswer.SelectedItem == null)
+            {
+                MessageBox.Show(
+                    "ابتدا یک پیام را از لیست انتخاب کنید.");
+
+                return;
+            }
+
+            await EditSelectedMessage();
+        }
+        private async Task EditSelectedMessage()
+        {
+            if (listAnswer.SelectedItem == null)
+            {
+                MessageBox.Show(
+                    "ابتدا یک پیام را انتخاب کنید.",
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                return;
+            }
+
+            if (!(listAnswer.SelectedItem is ChatMessage message))
+            {
+                MessageBox.Show(
+                    "پیام انتخاب شده معتبر نیست.",
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                return;
+            }
+
+            if (message.MessageId <= 0)
+            {
+                MessageBox.Show(
+                    "شناسه پیام معتبر نیست.",
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                return;
+            }
+
+            if (message.MessageType != "Text")
+            {
+                MessageBox.Show(
+                    "فقط پیام‌های متنی قابل ویرایش هستند.",
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+
+                return;
+            }
+
+            string currentText =
+                message.Text ?? "";
+
+            if (currentText.StartsWith("شما: "))
+            {
+                currentText =
+                    currentText.Substring(5);
+            }
+
+            if (string.IsNullOrWhiteSpace(currentText))
+            {
+                MessageBox.Show(
+                    "متن پیام خالی است.",
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                return;
+            }
+
+            using (EditMessageForm editForm =
+                   new EditMessageForm(currentText))
+            {
+                DialogResult result =
+                    editForm.ShowDialog(this);
+
+                if (result != DialogResult.OK)
+                    return;
+
+                string newText =
+                    editForm.EditedMessage;
+
+                if (string.IsNullOrWhiteSpace(newText))
+                    return;
+
+                if (newText == currentText)
+                    return;
+
+                try
+                {
+                    using (SqlConnection con =
+                           new SqlConnection(connectionString))
+                    {
+                        await con.OpenAsync();
+
+                        string query = @"
+                    UPDATE YourMessages
+                    SET YourMessage = @NewMessage
+                    WHERE Id = @MessageId
+                    AND YourId = @UserId";
+
+                        using (SqlCommand cmd =
+                               new SqlCommand(query, con))
+                        {
+                            cmd.Parameters.Add(
+                                "@NewMessage",
+                                SqlDbType.NVarChar,
+                                -1).Value =
+                                newText;
+
+                            cmd.Parameters.Add(
+                                "@MessageId",
+                                SqlDbType.Int).Value =
+                                message.MessageId;
+
+                            cmd.Parameters.Add(
+                                "@UserId",
+                                SqlDbType.Int).Value =
+                                currentUserId;
+
+                            int affected =
+                                await cmd.ExecuteNonQueryAsync();
+
+                            if (affected == 0)
+                            {
+                                MessageBox.Show(
+                                    "فقط فرستنده میتواند پیام را ویرایش کند",
+                                    "Nexa",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Warning);
+
+                                return;
+                            }
+                        }
+                    }
+
+                    message.Text =
+                        "شما: " + newText;
+
+                    listAnswer.Refresh();
+
+                    MessageBox.Show(
+                        "پیام با موفقیت ویرایش شد.",
+                        "Nexa",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(
+                        "خطا در ویرایش پیام:\n\n" +
+                        ex.Message,
+                        "Nexa",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                }
+            }
+        }
+        private void CreateReplyPanel()
+        {
+            replyPanel = new Panel();
+
+            replyPanel.Height = 70;
+            replyPanel.Dock = DockStyle.Top;
+            replyPanel.Visible = false;
+            replyPanel.BackColor = Color.FromArgb(35, 35, 45);
+
+            replySenderLabel = new Label();
+
+            replySenderLabel.AutoSize = false;
+            replySenderLabel.SetBounds(
+                15,
+                8,
+                400,
+                22);
+
+            replySenderLabel.Font =
+                new Font(
+                    "Segoe UI",
+                    9,
+                    FontStyle.Bold);
+
+            replySenderLabel.ForeColor =
+                Color.DeepSkyBlue;
+
+            replyTextLabel = new Label();
+
+            replyTextLabel.AutoSize = false;
+            replyTextLabel.SetBounds(
+                15,
+                30,
+                400,
+                30);
+
+            replyTextLabel.Font =
+                new Font(
+                    "Segoe UI",
+                    9);
+
+            replyTextLabel.ForeColor =
+                Color.White;
+
+            replyCancelButton = new Button();
+
+            replyCancelButton.Text = "✕";
+            replyCancelButton.SetBounds(
+                420,
+                15,
+                40,
+                35);
+
+            replyCancelButton.FlatStyle =
+                FlatStyle.Flat;
+
+            replyCancelButton.FlatAppearance.BorderSize =
+                0;
+
+            replyCancelButton.ForeColor =
+                Color.White;
+
+            replyCancelButton.BackColor =
+                Color.Transparent;
+
+            replyCancelButton.Click +=
+                btnReplay_Click;
+
+            replyPanel.Controls.Add(
+                replySenderLabel);
+
+            replyPanel.Controls.Add(
+                replyTextLabel);
+
+            replyPanel.Controls.Add(
+                replyCancelButton);
+
+            Controls.Add(replyPanel);
+
+            replyPanel.BringToFront();
+        }
+
+        private void btnReplay_Click(
+     object sender,
+     EventArgs e)
+        {
+            if (replyToMessage != null)
+            {
+                replyToMessage = null;
+
+                if (replyPanel != null)
+                {
+                    replyPanel.Visible = false;
+
+                    replySenderLabel.Text = "";
+
+                    replyTextLabel.Text = "";
+                }
+
+                txtYourMessage.Focus();
+
+                return;
+            }
+
+            if (listAnswer.SelectedItem == null)
+            {
+                MessageBox.Show(
+                    "ابتدا یک پیام را انتخاب کنید.",
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                return;
+            }
+
+            if (!(listAnswer.SelectedItem
+                  is ChatMessage message))
+            {
+                MessageBox.Show(
+                    "پیام انتخاب شده معتبر نیست.",
+                    "Nexa",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                return;
+            }
+
+            ShowReplyPanel(message);
+        }
+        private void ShowReplyPanel(
+    ChatMessage message)
+        {
+            if (message == null)
+                return;
+
+            replyToMessage = message;
+
+            string senderName;
+
+            if (message.SenderId == currentUserId)
+            {
+                senderName = "شما";
+            }
+            else
+            {
+                senderName = label3.Text;
+            }
+
+            string text =
+                message.Text ?? "";
+
+            if (text.StartsWith("شما: "))
+            {
+                text =
+                    text.Substring(5);
+            }
+            else if (
+                !string.IsNullOrWhiteSpace(label3.Text) &&
+                text.StartsWith(label3.Text + ": "))
+            {
+                text =
+                    text.Substring(
+                        label3.Text.Length + 2);
+            }
+
+            if (text.Length > 70)
+            {
+                text =
+                    text.Substring(0, 70) +
+                    "...";
+            }
+
+            replySenderLabel.Text =
+                "↩ پاسخ به " + senderName;
+
+            replyTextLabel.Text =
+                text;
+
+            replyPanel.Visible = true;
+
+            replyPanel.BringToFront();
+
+            txtYourMessage.Focus();
         }
     }
 }

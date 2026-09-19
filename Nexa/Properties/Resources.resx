@@ -118,79 +118,88 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="3741738-assurance-bussiness-ecommerce-marketplace-onlinestore-store_108896" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\3741738-assurance-bussiness-ecommerce-marketplace-onlinestore-store_108896.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="gif-images-file-type-interface-symbol-of-stroke_icon-icons.com_57567" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\gif-images-file-type-interface-symbol-of-stroke_icon-icons.com_57567.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="photocameraoutline_80020" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\photocameraoutline_80020.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="emoji_smile_icon_160172" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\emoji_smile_icon_160172.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="fileinterfacesymboloftextpapersheet_79740 (1)" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\fileinterfacesymboloftextpapersheet_79740 (1).png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="password_protect_secure_security_privacy_lock_padlock_icon_219328" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\password_protect_secure_security_privacy_lock_padlock_icon_219328.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="4092564-about-mobile-ui-profile-ui-user-website_1140331" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\4092564-about-mobile-ui-profile-ui-user-website_1140331.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="shop_place_marker_address_location_pin_map_ecommerce_icon_224950" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\shop_place_marker_address_location_pin_map_ecommerce_icon_224950.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="iconfinder-contat-us-1call-4211833_115049" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\iconfinder-contat-us-1call-4211833_115049.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="camera_icon-icons.com_72364 (1)" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\camera_icon-icons.com_72364 (1).png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="eye_show_icon_191607" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\eye_show_icon_191607.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="lock_icon_148524" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\lock_icon_148524.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="image_111003" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\image_111003.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="1904677-add-addition-calculate-charge-create-new-plus_122527" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\1904677-add-addition-calculate-charge-create-new-plus_122527.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="1490793813-user-interface20_82328" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\1490793813-user-interface20_82328.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="fileinterfacesymboloftextpapersheet_79740 (1)" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\fileinterfacesymboloftextpapersheet_79740 (1).png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="151220_login_2_v4d66e1f222" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\151220_login_2_v4d66e1f222.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="location_pin_place_map_address_placeholder_marker_icon_149108" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\location_pin_place_map_address_placeholder_marker_icon_149108.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="gif-images-file-type-interface-symbol-of-stroke_icon-icons.com_57567" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\gif-images-file-type-interface-symbol-of-stroke_icon-icons.com_57567.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="wondicon-ui-free-speaker_111240" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\wondicon-ui-free-speaker_111240.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="image_111003" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\image_111003.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="location_pin_place_map_address_placeholder_marker_icon_149108" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\location_pin_place_map_address_placeholder_marker_icon_149108.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Letter-N-icon_34803" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Letter-N-icon_34803.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="phone_4307" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\phone_4307.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="user-id-icon_34334" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\user-id-icon_34334.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Nexa" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Nexa.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="send_message_icon_250990" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\send_message_icon_250990.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="4092564-about-mobile-ui-profile-ui-user-website_114033" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\4092564-about-mobile-ui-profile-ui-user-website_114033.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="photocameraoutline_80020" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\photocameraoutline_80020.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="lock_icon_148524" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\lock_icon_148524.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="shop_place_marker_address_location_pin_map_ecommerce_icon_224950" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\shop_place_marker_address_location_pin_map_ecommerce_icon_224950.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="send_message_icon_250990" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\send_message_icon_250990.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="emoji_smile_icon_160172" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\emoji_smile_icon_160172.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="phone_4307" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\phone_4307.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="1490793813-user-interface20_82328" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\1490793813-user-interface20_82328.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="4092564-about-mobile-ui-profile-ui-user-website_1140331" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\4092564-about-mobile-ui-profile-ui-user-website_1140331.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="pencil-striped-symbol-for-interface-edit-buttons_icon-icons.com_56782" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\pencil-striped-symbol-for-interface-edit-buttons_icon-icons.com_56782.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="151220_login_2_v4d66e1f222" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\151220_login_2_v4d66e1f222.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="iconfinder-contat-us-1call-4211833_115049" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\iconfinder-contat-us-1call-4211833_115049.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Nexa" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Nexa.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="user-id-icon_34334" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\user-id-icon_34334.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="3741738-assurance-bussiness-ecommerce-marketplace-onlinestore-store_108896" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\3741738-assurance-bussiness-ecommerce-marketplace-onlinestore-store_108896.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="camera_icon-icons.com_72364 (1)" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\camera_icon-icons.com_72364 (1).png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="1904677-add-addition-calculate-charge-create-new-plus_122527" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\1904677-add-addition-calculate-charge-create-new-plus_122527.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="pencil-striped-symbol-for-interface-edit-buttons_icon-icons1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\pencil-striped-symbol-for-interface-edit-buttons_icon-icons.com_567821.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="waste_bin_delete_remove_recycle_icon_123840" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\waste_bin_delete_remove_recycle_icon_123840.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="eye_show_icon_191607" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\eye_show_icon_191607.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="replay_icon-icons.com_64443" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\replay_icon-icons.com_64443.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>
